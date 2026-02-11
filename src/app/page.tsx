@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Mic, Download, Trash2, StopCircle, Play, Pause, Save, User, QrCode, Search, Grid, List } from 'lucide-react';
-import Image from 'next/image';
+import { Plus, Mic, Download, Trash2, Search, BookOpen, GraduationCap, School, QrCode } from 'lucide-react';
 
 interface Student {
   id: string;
   name: string;
-  lastFeedback?: string; // timestamp of last feedback
 }
 
 export default function Home() {
@@ -16,7 +14,6 @@ export default function Home() {
   const [newStudentName, setNewStudentName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isClient, setIsClient] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     setIsClient(true);
@@ -43,7 +40,7 @@ export default function Home() {
   };
 
   const deleteStudent = (id: string) => {
-    if (confirm('確定要刪除這位學生嗎？')) {
+    if (confirm('確定要移除這位學生的紀錄嗎？')) {
       setStudents(students.filter(s => s.id !== id));
     }
   };
@@ -53,55 +50,52 @@ export default function Home() {
     return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${baseUrl}/feedback/${studentId}`)}`;
   };
 
-  // 隨機分配學生頭像顏色的輔助函數
-  const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-100 text-blue-600', 'bg-green-100 text-green-600', 'bg-yellow-100 text-yellow-600', 'bg-purple-100 text-purple-600', 'bg-pink-100 text-pink-600', 'bg-indigo-100 text-indigo-600'];
-    const index = name.length % colors.length;
-    return colors[index];
+  // 隨機分配課程卡片顏色
+  const getCardColor = (name: string) => {
+    const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-600', 'bg-green-600', 'bg-lime-600', 'bg-sky-600'];
+    return colors[name.length % colors.length];
   };
 
   const filteredStudents = students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-6 md:p-12 font-sans text-neutral-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
 
-      {/* 頂部導覽列：極簡標題與操作區 */}
-      <header className="max-w-6xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 flex items-center gap-3">
-              <span className="bg-neutral-900 text-white p-2 rounded-lg">
-                <Mic className="w-6 h-6" />
-              </span>
-              Voice Feedback
-            </h1>
-            <p className="text-neutral-500 mt-2 text-lg">極簡高效的作文語音批改系統</p>
+      {/* 頂部導覽列 (Taipei e-Learning Header Style) */}
+      <header className="bg-white border-b-4 border-emerald-500 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-emerald-500 p-2 rounded-lg shadow-lg rotate-3 hover:rotate-0 transition-transform duration-300">
+              <School className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
+                Voice Feedback <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+              </h1>
+              <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white p-1 rounded-xl border border-neutral-200 shadow-sm">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-neutral-100 text-neutral-900 shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}
-            >
-              <Grid className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-neutral-100 text-neutral-900 shadow-sm' : 'text-neutral-400 hover:text-neutral-600'}`}
-            >
-              <List className="w-5 h-5" />
-            </button>
+          <div className="hidden md:flex items-center gap-4 text-sm font-medium text-slate-600">
+            <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-2">
+              <GraduationCap className="w-4 h-4" />
+              學生總數: {students.length}
+            </span>
           </div>
         </div>
+      </header>
 
-        {/* 搜尋與新增：懸浮設計 */}
-        <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-2xl shadow-sm border border-neutral-100">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
+      {/* 主內容區 */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        {/* 操作工具列：搜尋與新增 */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative w-full md:w-96 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
             <input
               type="text"
               placeholder="搜尋學生姓名..."
-              className="w-full pl-12 pr-4 py-3 bg-neutral-50 rounded-xl border-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all outline-none text-neutral-700 font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -110,92 +104,97 @@ export default function Home() {
           <div className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
-              placeholder="新增學生..."
-              className="flex-1 px-4 py-3 bg-neutral-50 rounded-xl border-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all outline-none font-medium"
+              placeholder="輸入學生姓名..."
+              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all w-full md:w-64"
               value={newStudentName}
               onChange={(e) => setNewStudentName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addStudent()}
             />
+
             <button
               onClick={addStudent}
-              className="bg-neutral-900 hover:bg-black text-white px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 active:scale-95 shadow-lg shadow-neutral-500/20 flex items-center gap-2 whitespace-nowrap"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/30 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
             >
               <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">新增</span>
+              新增
             </button>
           </div>
         </div>
-      </header>
 
-      {/* 學生列表區：網格佈局 */}
-      <main className="max-w-6xl mx-auto">
+        {/* 學生列表：課程卡片風格 */}
         {students.length === 0 ? (
-          <div className="text-center py-24 bg-white/50 rounded-3xl border border-dashed border-neutral-200">
-            <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-300">
-              <User className="w-10 h-10" />
+          <div className="bg-white rounded-3xl border-2 border-dashed border-slate-200 p-12 text-center">
+            <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="w-10 h-10 text-emerald-300" />
             </div>
-            <h3 className="text-xl font-bold text-neutral-700 mb-2">還沒有任何學生</h3>
-            <p className="text-neutral-400">請在上方輸入姓名新增第一位學生</p>
+            <h3 className="text-xl font-bold text-slate-700 mb-2">開始建立您的班級！</h3>
+            <p className="text-slate-400 mb-6">目前還沒有學生資料，請在上方輸入姓名新增。</p>
           </div>
         ) : (
-          <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredStudents.map((student) => (
               <div
                 key={student.id}
-                className={`group relative bg-white rounded-2xl border border-neutral-100 hover:border-blue-100 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 overflow-hidden ${viewMode === 'list' ? 'flex items-center justify-between p-4' : 'p-6 flex flex-col items-center text-center'}`}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
               >
-                {/* 學生資訊 */}
-                <div className={`flex items-center gap-4 ${viewMode === 'list' ? '' : 'flex-col mb-6'}`}>
-                  <div className={`flex items-center justify-center font-bold text-xl rounded-2xl shadow-inner ${getAvatarColor(student.name)} ${viewMode === 'list' ? 'w-12 h-12' : 'w-20 h-20 text-3xl mb-2'}`}>
-                    {student.name.charAt(0)}
+                {/* 卡片頂部裝飾條 (Course Theme Color) */}
+                <div className={`h-24 ${getCardColor(student.name)} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
+                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1.5 shadow-lg flex items-center justify-center z-10">
+                    <div className={`w-full h-full rounded-full ${getCardColor(student.name)} flex items-center justify-center text-white text-2xl font-bold uppercase`}>
+                      {student.name.charAt(0)}
+                    </div>
                   </div>
-                  <div className={viewMode === 'list' ? '' : 'text-center'}>
-                    <h3 className="font-bold text-neutral-800 text-lg group-hover:text-blue-600 transition-colors">{student.name}</h3>
-                    <p className="text-xs font-mono text-neutral-400 mt-1 uppercase tracking-wider">ID: {student.id.slice(0, 8)}</p>
-                  </div>
-                </div>
-
-                {/* 操作按鈕群 */}
-                <div className={`flex items-center gap-2 ${viewMode === 'list' ? '' : 'w-full justify-center pt-4 border-t border-neutral-50 mt-auto'}`}>
-                  <Link
-                    href={`/record/${student.id}`}
-                    className={`flex items-center justify-center gap-2 bg-neutral-50 hover:bg-blue-600 hover:text-white text-neutral-600 rounded-xl transition-all duration-300 ${viewMode === 'list' ? 'p-3' : 'flex-1 py-3 text-sm font-medium'}`}
-                  >
-                    <Mic className="w-4 h-4" />
-                    {viewMode === 'grid' && <span>錄音</span>}
-                  </Link>
-
-                  <a
-                    href={generateQRCodeUrl(student.id)}
-                    download={`qrcode-${student.name}.png`}
-                    target="_blank"
-                    className="p-3 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-all"
-                    title="下載 QR Code"
-                  >
-                    <QrCode className="w-5 h-5" />
-                  </a>
-
+                  {/* 刪除按鈕 (隱藏在右上角，Hover 出現) */}
                   <button
-                    onClick={() => deleteStudent(student.id)}
-                    className="p-3 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                    title="刪除"
+                    onClick={(e) => { e.preventDefault(); deleteStudent(student.id); }}
+                    className="absolute top-2 right-2 p-2 bg-white/20 text-white hover:bg-red-500 hover:text-white rounded-lg transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                    title="移除學生"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
+
+                  {/* QR Code 下載 (隱藏在左上角) */}
+                  <a
+                    href={generateQRCodeUrl(student.id)}
+                    download={`qrcode-${student.name}.png`}
+                    className="absolute top-2 left-2 p-2 bg-white/20 text-white hover:bg-white hover:text-emerald-600 rounded-lg transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                    title="下載 QR Code"
+                    target="_blank"
+                  >
+                    <QrCode className="w-4 h-4" />
+                  </a>
                 </div>
 
-                {/* 狀態指示燈 (裝飾用，這裡可以根據是否有錄音來改變顏色) */}
-                <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                {/* 卡片內容 */}
+                <div className="pt-12 pb-6 px-6 text-center flex-1">
+                  <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{student.name}</h3>
+                  <p className="text-xs text-slate-400 font-mono bg-slate-100 inline-block px-2 py-0.5 rounded-md mb-4">
+                    ID: {student.id.slice(0, 6)}...
+                  </p>
+                  <p className="text-sm text-slate-500 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100/50">
+                    點擊下方按鈕開始錄製回饋
+                  </p>
+                </div>
+
+                {/* 底部按鈕 */}
+                <div className="p-4 bg-slate-50 border-t border-slate-100">
+                  <Link
+                    href={`/record/${student.id}`}
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg shadow-emerald-500/20"
+                  >
+                    <Mic className="w-5 h-5" />
+                    開始錄音
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
         )}
       </main>
 
-      <footer className="mt-20 text-center border-t border-neutral-100 pt-8">
-        <p className="text-neutral-400 text-sm font-light">
-          Designed for Education &middot; Minimalist Edition &copy; 2026
-        </p>
+      <footer className="bg-white border-t border-slate-200 mt-20 py-8 text-center text-slate-400 text-sm">
+        <p>&copy; 2026 Voice Feedback System &middot; Inspired by Taipei e-Learning</p>
       </footer>
     </div>
   );
