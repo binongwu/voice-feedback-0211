@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import { Play, Pause, Download, Volume2, User, Loader2 } from 'lucide-react';
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
@@ -10,7 +11,10 @@ interface Student {
     name: string;
 }
 
-export default function FeedbackPage({ params }: { params: { id: string } }) {
+export default function FeedbackPage() {
+    const params = useParams();
+    const studentId = params?.id as string;
+
     const [student, setStudent] = useState<Student | null>(null);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -21,9 +25,10 @@ export default function FeedbackPage({ params }: { params: { id: string } }) {
     const [duration, setDuration] = useState('00:00');
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const studentId = params.id;
 
     useEffect(() => {
+        if (!studentId) return;
+
         // Determine student name from ID locally for now
         const savedStudents = localStorage.getItem('students');
         if (savedStudents) {

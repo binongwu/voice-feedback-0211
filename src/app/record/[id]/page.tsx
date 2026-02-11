@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Mic, StopCircle, Play, Pause, Save, RotateCcw, Check, Sparkles, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
 import { storage } from '@/lib/firebase';
@@ -12,8 +12,11 @@ interface Student {
     name: string;
 }
 
-export default function RecordPage({ params }: { params: { id: string } }) {
+export default function RecordPage() {
     const router = useRouter();
+    const params = useParams();
+    const studentId = params?.id as string;
+
     const [student, setStudent] = useState<Student | null>(null);
     const [isRecording, setIsRecording] = useState(false);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -27,13 +30,14 @@ export default function RecordPage({ params }: { params: { id: string } }) {
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null); // Ref for the audio element
 
-    const unwrappedParams = params;
 
     useEffect(() => {
+        if (!studentId) return;
+
         const savedStudents = localStorage.getItem('students');
         if (savedStudents) {
             const students: Student[] = JSON.parse(savedStudents);
-            const foundStudent = students.find(s => s.id === unwrappedParams.id);
+            const foundStudent = students.find(s => s.id === studentId);
             if (foundStudent) {
                 setStudent(foundStudent);
             } else {
@@ -41,7 +45,7 @@ export default function RecordPage({ params }: { params: { id: string } }) {
                 router.push('/');
             }
         }
-    }, [unwrappedParams.id, router]);
+    }, [studentId, router]);
 
     const startRecording = async () => {
         try {
