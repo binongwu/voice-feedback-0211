@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { Play, Pause, School, Volume2, Info, X } from 'lucide-react';
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
+import { CLASS_INFO } from '@/config/class-info';
 
 interface Student {
     id: string;
@@ -142,7 +143,7 @@ export default function FeedbackPage() {
                     {/* Badge */}
                     <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-white/90 text-xs font-medium flex items-center gap-1.5">
                         <School className="w-3 h-3" />
-                        508 寫作教室
+                        {CLASS_INFO.id} 寫作教室
                     </div>
                 </div>
 

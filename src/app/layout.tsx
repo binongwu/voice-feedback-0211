@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { CLASS_INFO } from "@/config/class-info";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "508寫作批改回饋",
-  description: "老師與學生的互動平台",
+  title: CLASS_INFO.titlePrefix,
+  description: CLASS_INFO.systemName,
 };
 
 export default function RootLayout({

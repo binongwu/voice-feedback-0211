@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Mic, Trash2, BookOpen, GraduationCap, School, QrCode } from 'lucide-react';
+import { CLASS_INFO } from '@/config/class-info';
 
 interface Student {
     id: string;
@@ -90,7 +91,7 @@ export default function Home() {
                         </Link>
                         <div>
                             <h1 className="text-xl font-bold text-stone-800 tracking-tight flex items-center gap-2">
-                                508 寫作回饋
+                                {CLASS_INFO.id} 寫作回饋
                                 <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">v.Morandi-1420</span>
                             </h1>
                             <p className="text-xs text-stone-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
@@ -165,7 +166,7 @@ export default function Home() {
             </main>
 
             <footer className="bg-stone-50 border-t border-stone-200 mt-20 py-8 text-center text-stone-400 text-sm font-light tracking-wide">
-                <p>Voice Feedback System &middot; Class 508</p>
+                <p>Voice Feedback System &middot; Class {CLASS_INFO.id}</p>
             </footer>
         </div>
     );

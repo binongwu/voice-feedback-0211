@@ -1,7 +1,8 @@
 "use client";
 
 import Link from 'next/link';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Mic } from 'lucide-react';
+import { CLASS_INFO } from '@/config/class-info';
 
 export default function RootPage() {
   return (
@@ -19,10 +20,10 @@ export default function RootPage() {
         {/* Title */}
         <div>
           <h1 className="text-3xl font-serif font-bold text-stone-800 mb-2 tracking-tight">
-            Class 508 Hub
+            Class {CLASS_INFO.id} Hub
           </h1>
           <p className="text-stone-500 text-sm font-medium uppercase tracking-widest">
-            智慧教學輔助系統
+            {CLASS_INFO.systemName}
           </p>
         </div>
 
@@ -54,13 +55,10 @@ export default function RootPage() {
         </div>
 
         <footer className="pt-12 text-stone-300 text-xs font-light">
-          &copy; 2026 Class 508 System
+          &copy; 2026 {CLASS_INFO.copyright}
         </footer>
 
       </div>
     </div>
   );
 }
-
-// Icon component (Re-declared for this file scope to avoid imports if not needed, but here we used Lucide)
-import { Mic } from 'lucide-react';
