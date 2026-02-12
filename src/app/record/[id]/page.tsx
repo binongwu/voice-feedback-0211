@@ -156,8 +156,11 @@ export default function RecordPage() {
 
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     <button
-                        onClick={() => navigator.clipboard.writeText(`${window.location.origin}/feedback/${studentId}`)}
-                        className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition-colors border border-slate-700"
+                        onClick={() => {
+                            const url = `${window.location.origin}/feedback/${studentId}`;
+                            navigator.clipboard.writeText(url).then(() => alert('已複製連結！'));
+                        }}
+                        className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/10"
                     >
                         複製連結
                     </button>

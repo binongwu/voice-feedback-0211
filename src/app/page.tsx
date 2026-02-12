@@ -145,10 +145,14 @@ export default function Home() {
                       {student.name.charAt(0)}
                     </div>
                   </div>
-                  {/* 刪除按鈕 (隱藏在右上角，Hover 出現) */}
+                  {/* 刪除按鈕 (Always visible) */}
                   <button
-                    onClick={(e) => { e.preventDefault(); deleteStudent(student.id); }}
-                    className="absolute top-2 right-2 p-2 bg-white/20 text-white hover:bg-red-500 hover:text-white rounded-lg transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (confirm('確定要移除這位學生嗎？')) deleteStudent(student.id);
+                    }}
+                    className="absolute top-2 right-2 p-2 bg-white/90 text-slate-400 hover:bg-red-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
                     title="移除學生"
                   >
                     <Trash2 className="w-4 h-4" />
