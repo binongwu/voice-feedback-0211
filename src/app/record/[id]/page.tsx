@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Mic, StopCircle, Play, Pause, RotateCcw, UploadCloud } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Play, Pause, RefreshCw, Upload, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytes } from 'firebase/storage';
@@ -23,16 +23,17 @@ export default function RecordPage() {
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
     const [uploading, setUploading] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    // --- Logic Block (Preserved) ---
     useEffect(() => {
         if (!studentId) return;
 
-        // 直接讀取，不做任何延遲或複雜判斷
         const savedStudents = localStorage.getItem('students');
         if (savedStudents) {
             const students: Student[] = JSON.parse(savedStudents);
@@ -40,7 +41,6 @@ export default function RecordPage() {
             if (foundStudent) {
                 setStudent(foundStudent);
             } else {
-                // 找不到也不要自動跳轉，顯示錯誤即可，方便除錯
                 console.error('Student not found');
             }
         }
@@ -95,7 +95,7 @@ export default function RecordPage() {
         try {
             const metadata = { contentType: 'audio/webm', cacheControl: 'public, max-age=0, must-revalidate' };
             await uploadBytes(storageRef, audioBlob, metadata);
-            alert('上傳成功！');
+            // alert('上傳成功！'); // Removed alert for smoother UX
             router.push('/');
         } catch (error) {
             console.error('Firebase Upload error:', error);
@@ -111,81 +111,181 @@ export default function RecordPage() {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const handlePlayPreview = () => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+                setIsPlaying(false);
+            } else {
+                audioRef.current.play();
+                setIsPlaying(true);
+            }
+        }
+    };
+
     if (!student) {
         return (
-            <div className="p-8 text-center">
-                <h1 className="text-xl font-bold mb-4">找不到學生資料 (ID: {studentId})</h1>
-                <p className="mb-4">請確認您是從首頁點擊進來的。</p>
-                <Link href="/" className="text-blue-500 underline">回首頁</Link>
+            <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-slate-400 font-mono gap-4">
+                <div className="animate-pulse">Loading Studio...</div>
+                <div className="text-xs">ID: {studentId}</div>
+                <Link href="/" className="text-emerald-500 hover:underline">Return to Dashboard</Link>
             </div>
         );
     }
 
+    // --- UI Block (New Design) ---
     return (
-        <div className="min-h-screen bg-white p-6 flex flex-col items-center">
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 font-sans text-white overflow-hidden">
 
-            <div className="w-full max-w-md">
-                <Link href="/" className="mb-6 inline-block text-gray-500 flex items-center gap-2">
-                    <ArrowLeft size={20} /> 回列表
-                </Link>
+            <div className="max-w-lg mx-auto px-6 py-8 relative z-10">
 
-                <h1 className="text-2xl font-bold mb-2">錄音給：{student.name}</h1>
-                <p className="text-gray-500 mb-8">請點擊下方按鈕開始錄音</p>
-
-                {/* 錄音狀態顯示 */}
-                <div className="bg-gray-100 rounded-xl p-6 text-center mb-8">
-                    {isRecording ? (
-                        <div className="text-red-500 font-bold text-3xl animate-pulse">
-                            {formatTime(recordingTime)}
-                        </div>
-                    ) : audioUrl ? (
-                        <div>
-                            <audio src={audioUrl} controls className="w-full mb-4" />
-                            <p className="text-green-600 font-medium">錄音完成！請確認後上傳</p>
-                        </div>
-                    ) : (
-                        <div className="text-gray-400">準備就緒</div>
-                    )}
+                {/* Header */}
+                <div className="flex items-center gap-4 mb-8">
+                    <Link href="/" className="w-10 h-10 rounded-xl bg-slate-700/50 hover:bg-slate-700 transition-colors flex items-center justify-center text-slate-300 hover:text-white">
+                        <ArrowLeft className="w-5 h-5" />
+                    </Link>
+                    <div className="flex-1">
+                        <p className="text-slate-400 text-sm font-medium">錄製回饋給</p>
+                        <h1 className="text-xl font-bold text-white tracking-wide">{student.name}</h1>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-amber-500/30 ring-2 ring-slate-800">
+                        {student.name.charAt(0)}
+                    </div>
                 </div>
 
-                {/* 按鈕區 */}
-                <div className="flex justify-center gap-4">
-                    {!isRecording && !audioUrl && (
-                        <button
-                            onClick={startRecording}
-                            className="bg-red-500 text-white w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all"
-                        >
-                            <Mic size={32} />
-                        </button>
-                    )}
-
+                {/* Status Card */}
+                <div className="bg-slate-800/50 rounded-2xl p-6 mb-8 border border-slate-700/50 backdrop-blur-sm relative overflow-hidden">
+                    {/* Background Gradient for Active State */}
                     {isRecording && (
-                        <button
-                            onClick={stopRecording}
-                            className="bg-gray-800 text-white w-20 h-20 rounded-full flex items-center justify-center shadow-lg hover:bg-black transition-all"
-                        >
-                            <StopCircle size={32} />
-                        </button>
+                        <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
                     )}
 
-                    {audioUrl && (
-                        <div className="flex w-full gap-2">
+                    <div className="flex items-center justify-between mb-4 relative z-10">
+                        <span className={`text-sm font-medium transition-colors ${isRecording ? 'text-red-400' : 'text-slate-400'}`}>
+                            {isRecording ? '正在錄音...' : audioUrl ? '錄音完成' : '準備錄音'}
+                        </span>
+                        <span className={`w-3 h-3 rounded-full transition-all duration-500 ${isRecording ? 'bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]' : audioUrl ? 'bg-emerald-500' : 'bg-slate-500'}`}></span>
+                    </div>
+
+                    {/* Timer Display */}
+                    <div className="text-center py-6 relative z-10">
+                        <div className="font-mono text-6xl font-bold text-white tracking-wider tabular-nums drop-shadow-lg">
+                            {formatTime(recordingTime)}
+                        </div>
+                        <p className="text-slate-500 text-xs mt-3 uppercase tracking-widest font-medium">Recording Time</p>
+                    </div>
+
+                    {/* Sound Waves Visualization */}
+                    <div className={`flex items-center justify-center gap-1.5 h-16 transition-opacity duration-500 ${isRecording ? 'opacity-100' : 'opacity-20'}`}>
+                        {[...Array(12)].map((_, i) => (
+                            <div
+                                key={i}
+                                className={`w-1.5 bg-red-500 rounded-full ${isRecording ? 'animate-wave' : ''}`}
+                                style={{
+                                    height: isRecording ? '40%' : '20%',
+                                    animationDelay: `${i * 0.1}s`,
+                                    backgroundColor: isRecording ? '#ef4444' : '#475569'
+                                }}
+                            ></div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Main Recording Button Area */}
+                {!audioUrl ? (
+                    <div className="flex flex-col items-center mb-8 relative">
+                        <div className="relative">
+                            {/* Pulse rings */}
+                            {isRecording && (
+                                <>
+                                    <div className="absolute inset-0 rounded-full bg-red-500/20 animate-[pulse-ring_2s_ease-out_infinite]"></div>
+                                    <div className="absolute inset-0 rounded-full bg-red-500/30 animate-[pulse-ring_2s_ease-out_infinite_0.5s]"></div>
+                                </>
+                            )}
+
+                            {/* Main button */}
                             <button
-                                onClick={() => { setAudioUrl(null); setAudioBlob(null); }}
-                                className="flex-1 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                                onClick={isRecording ? stopRecording : startRecording}
+                                className={`relative w-32 h-32 rounded-full transition-all duration-300 flex items-center justify-center shadow-2xl z-10 group ${isRecording
+                                        ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-4 border-red-500/50 hover:border-red-500 animate-recording-pulse'
+                                        : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 shadow-red-500/40 hover:shadow-red-500/60 hover:scale-105 active:scale-95'
+                                    }`}
                             >
-                                重錄
+                                {isRecording ? (
+                                    <Square className="w-12 h-12 text-red-500 fill-current" />
+                                ) : (
+                                    <Mic className="w-14 h-14 text-white group-hover:scale-110 transition-transform" />
+                                )}
                             </button>
+                        </div>
+                        <p className="text-slate-400 text-sm mt-6 font-medium tracking-wide">
+                            {isRecording ? '點擊停止錄音' : '點擊開始錄音'}
+                        </p>
+                    </div>
+                ) : (
+                    /* Post-Recording Actions */
+                    <div className="space-y-6 animate-in slide-in-from-bottom-10 fade-in duration-500">
+
+                        {/* Audio Preview */}
+                        <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-white font-medium">錄音完成</p>
+                                    <p className="text-slate-400 text-sm">請確認內容無誤後上傳</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 bg-slate-900/50 rounded-xl p-4 border border-slate-700/30">
+                                <button
+                                    onClick={handlePlayPreview}
+                                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white shrink-0"
+                                >
+                                    {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
+                                </button>
+                                <div className="h-full w-full flex items-center">
+                                    <div className="h-1.5 bg-slate-700 rounded-full w-full overflow-hidden">
+                                        <div className="h-full bg-emerald-500 rounded-full w-1/2"></div> {/* Mock progress */}
+                                    </div>
+                                </div>
+                                <audio
+                                    ref={audioRef}
+                                    src={audioUrl}
+                                    onEnded={() => setIsPlaying(false)}
+                                    className="hidden"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
                             <button
                                 onClick={handleUpload}
                                 disabled={uploading}
-                                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 rounded-xl text-white font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none"
                             >
-                                {uploading ? '上傳中...' : '確認上傳'}
+                                {uploading ? (
+                                    <span className="animate-pulse">上傳中...</span>
+                                ) : (
+                                    <>
+                                        <Upload className="w-6 h-6" />
+                                        上傳錄音
+                                    </>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => { setAudioUrl(null); setAudioBlob(null); setIsPlaying(false); }}
+                                className="w-full py-4 px-6 bg-slate-800/50 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white font-medium flex items-center justify-center gap-3 transition-all border border-slate-700 hover:border-slate-600"
+                            >
+                                <RefreshCw className="w-5 h-5" />
+                                重新錄音
                             </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
             </div>
         </div>
