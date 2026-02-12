@@ -125,6 +125,12 @@ export default function FeedbackPage() {
                             </div>
                         ) : (
                             <>
+                                <div className="text-center mb-8">
+                                    <p className="text-slate-500 font-medium">
+                                        老師已經完成了你的寫作批改，<br />點擊下方按鈕收聽回饋。
+                                    </p>
+                                </div>
+
                                 {/* 進度條 */}
                                 <div className="mb-8">
                                     <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 tracking-wide font-mono">
@@ -140,28 +146,28 @@ export default function FeedbackPage() {
                                 </div>
 
                                 {/* 按鈕群 */}
-                                <div className="flex items-center justify-center gap-8 mb-6">
-                                    <button className="p-3 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full">
-                                        <Volume2 className="w-5 h-5" />
+                                <div className="flex items-center justify-center gap-6 sm:gap-10 mb-6">
+                                    <button className="p-4 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full hover:bg-emerald-50">
+                                        <Volume2 className="w-6 h-6" />
                                     </button>
 
                                     <button
                                         onClick={togglePlay}
-                                        className="w-20 h-20 bg-emerald-500 text-white rounded-[24px] flex items-center justify-center shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all group hover:bg-emerald-400"
+                                        className="w-24 h-24 sm:w-28 sm:h-28 bg-emerald-500 text-white rounded-[32px] flex items-center justify-center shadow-xl shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all group hover:bg-emerald-400 border-4 border-emerald-100/50"
                                     >
                                         {isPlaying ? (
-                                            <Pause className="w-8 h-8 fill-current" />
+                                            <Pause className="w-10 h-10 sm:w-12 sm:h-12 fill-current" />
                                         ) : (
-                                            <Play className="w-8 h-8 fill-current ml-1" />
+                                            <Play className="w-10 h-10 sm:w-12 sm:h-12 fill-current ml-2" />
                                         )}
                                     </button>
 
                                     <a
                                         href={audioUrl || '#'}
                                         download={`feedback-${studentId}.webm`}
-                                        className={`p-3 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full ${!audioUrl ? 'opacity-50 pointer-events-none' : ''}`}
+                                        className={`p-4 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full hover:bg-emerald-50 ${!audioUrl ? 'opacity-50 pointer-events-none' : ''}`}
                                     >
-                                        <Download className="w-5 h-5" />
+                                        <Download className="w-6 h-6" />
                                     </a>
                                 </div>
                             </>
