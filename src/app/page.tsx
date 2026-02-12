@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Mic, Download, Trash2, Search, BookOpen, GraduationCap, School, QrCode } from 'lucide-react';
+import { Mic, Trash2, BookOpen, GraduationCap, School, QrCode } from 'lucide-react';
 
 interface Student {
   id: string;
   name: string;
-  avatar?: string; // Optional custom avatar
 }
 
 const DEFAULT_STUDENTS: Student[] = [
@@ -52,7 +51,6 @@ export default function Home() {
     const savedStudents = localStorage.getItem('students');
     if (savedStudents) {
       const parsed = JSON.parse(savedStudents);
-      // Only use saved if not empty, otherwise use default
       if (parsed.length > 0) {
         setStudents(parsed);
       } else {
@@ -79,11 +77,6 @@ export default function Home() {
     return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(feedbackUrl)}`;
   };
 
-  const getCardColor = (name: string) => {
-    const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-600', 'bg-green-600', 'bg-lime-600', 'bg-sky-600'];
-    return colors[name.length % colors.length];
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
 
@@ -97,7 +90,7 @@ export default function Home() {
             <div>
               <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
                 508寫作批改回饋
-                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1334</span>
+                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1340</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
             </div>
@@ -125,75 +118,65 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {students.map((student) => {
-              // Deterministic Animal Avatar
-              const animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦉', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗'];
-              const avatar = animals[student.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % animals.length];
-
               return (
                 <div
                   key={student.id}
-                  className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border border-slate-100 flex flex-col group relative"
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-slate-100 flex flex-col p-3 group h-auto"
                 >
-                  {/* 刪除按鈕 */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (confirmDeleteId === student.id) {
-                        deleteStudent(student.id);
-                        setConfirmDeleteId(null);
-                      } else {
-                        setConfirmDeleteId(student.id);
-                        setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
-                      }
-                    }}
-                    className={`absolute top-1.5 right-1.5 p-1.5 rounded-lg transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
-                      ? 'bg-red-600 text-white border-red-600 animate-pulse'
-                      : 'bg-red-50 text-red-500 hover:bg-red-600 hover:text-white border-red-100'
-                      }`}
-                    title={confirmDeleteId === student.id ? "再次點擊以確認刪除" : "移除學生"}
-                  >
-                    {confirmDeleteId === student.id ? (
-                      <span className="text-[10px] font-bold whitespace-nowrap px-1">確認?</span>
-                    ) : (
-                      <Trash2 className="w-3.5 h-3.5" />
-                    )}
-                  </button>
+                  {/* 第一排：姓名 + 操作按鈕 */}
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-slate-800 tracking-tight leading-none flex items-center pl-1 border-l-4 border-emerald-400 h-5">
+                      {student.name}
+                    </h3>
 
-                  {/* 卡片頂部 */}
-                  <div className="h-16 bg-lime-100/90 relative overflow-hidden flex items-center justify-center border-b border-lime-200">
-                    <div className="absolute inset-0 bg-emerald-500/5 opacity-50 pattern-dots transform rotate-12 scale-150"></div>
+                    <div className="flex items-center gap-1">
+                      {/* QR Code */}
+                      <a
+                        href={generateQRCodeUrl(student.id, student.name)}
+                        download={`qrcode-${student.name}.png`}
+                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                        title="下載 QR Code"
+                        target="_blank"
+                      >
+                        <QrCode className="w-4 h-4" />
+                      </a>
 
-                    {/* QR Code */}
-                    <a
-                      href={generateQRCodeUrl(student.id, student.name)}
-                      download={`qrcode-${student.name}.png`}
-                      className="absolute top-1.5 left-1.5 p-1.5 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
-                      title="下載 QR Code"
-                      target="_blank"
-                    >
-                      <QrCode className="w-3.5 h-3.5" />
-                    </a>
-
-                    {/* Avatar */}
-                    <div className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-2xl z-10 mt-5 transform translate-y-3">
-                      {avatar}
+                      {/* 刪除按鈕 */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (confirmDeleteId === student.id) {
+                            deleteStudent(student.id);
+                            setConfirmDeleteId(null);
+                          } else {
+                            setConfirmDeleteId(student.id);
+                            setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
+                          }
+                        }}
+                        className={`p-1.5 rounded-lg transition-all ${confirmDeleteId === student.id
+                          ? 'bg-red-600 text-white animate-pulse'
+                          : 'text-slate-400 hover:text-red-500 hover:bg-red-50'
+                          }`}
+                        title={confirmDeleteId === student.id ? "確認刪除" : "移除"}
+                      >
+                        {confirmDeleteId === student.id ? (
+                          <span className="text-[10px] font-bold px-1">確認</span>
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
                   </div>
 
-                  {/* 卡片內容 */}
-                  <div className="pt-8 pb-3 px-3 text-center flex-1 flex flex-col justify-between">
-                    <h3 className="text-base font-bold text-slate-800 mb-3 line-clamp-1">{student.name}</h3>
-
-                    {/* 錄音按鈕 */}
-                    <Link
-                      href={`/record/${student.id}`}
-                      className="flex items-center justify-center gap-1.5 w-full py-2 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-sm hover:shadow-md shadow-emerald-500/20 text-xs"
-                    >
-                      <Mic className="w-3.5 h-3.5" />
-                      錄音
-                    </Link>
-                  </div>
+                  {/* 第二排：錄音按鈕 */}
+                  <Link
+                    href={`/record/${student.id}`}
+                    className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-500 hover:text-white active:bg-emerald-600 active:text-white rounded-lg font-bold transition-all text-sm border border-emerald-100 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white"
+                  >
+                    <Mic className="w-4 h-4" />
+                    開始錄音
+                  </Link>
                 </div>
               )
             })}
