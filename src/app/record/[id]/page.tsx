@@ -47,10 +47,22 @@ export default function RecordPage() {
         }
     }, [studentId]);
 
+    const mimeTypeRef = useRef<string>('');
+
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+
+            // Detect best supported MIME type
+            let mimeType = 'audio/webm';
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                mimeType = 'audio/webm;codecs=opus';
+            } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                mimeType = 'audio/mp4'; // Safari fallback
+            }
+
+            mimeTypeRef.current = mimeType;
+            mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
             chunksRef.current = [];
 
             mediaRecorderRef.current.ondataavailable = (e) => {
@@ -58,7 +70,7 @@ export default function RecordPage() {
             };
 
             mediaRecorderRef.current.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+                const blob = new Blob(chunksRef.current, { type: mimeType });
                 setAudioBlob(blob);
                 const url = URL.createObjectURL(blob);
                 setAudioUrl(url);
@@ -94,7 +106,7 @@ export default function RecordPage() {
         const storageRef = ref(storage, `feedback/${student.id}.webm`);
 
         try {
-            const metadata = { contentType: 'audio/webm', cacheControl: 'public, max-age=0, must-revalidate' };
+            const metadata = { contentType: mimeTypeRef.current || 'audio/webm', cacheControl: 'public, max-age=0, must-revalidate' };
             await uploadBytes(storageRef, audioBlob, metadata);
             setUploadSuccess(true); // Don't redirect, show success screen
         } catch (error) {
