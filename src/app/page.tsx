@@ -90,7 +90,7 @@ export default function Home() {
             <div>
               <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
                 508寫作批改回饋
-                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1340</span>
+                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1342</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
             </div>
@@ -169,10 +169,10 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* 第二排：錄音按鈕 */}
+                  {/* 第二排：錄音按鈕 (加強邊框) */}
                   <Link
                     href={`/record/${student.id}`}
-                    className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-500 hover:text-white active:bg-emerald-600 active:text-white rounded-lg font-bold transition-all text-sm border border-emerald-100 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white"
+                    className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-white text-emerald-600 border-2 border-emerald-500 hover:bg-emerald-500 hover:text-white active:bg-emerald-600 active:border-emerald-600 rounded-lg font-bold transition-all text-sm shadow-sm hover:shadow-md"
                   >
                     <Mic className="w-4 h-4" />
                     開始錄音
