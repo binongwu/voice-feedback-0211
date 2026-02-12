@@ -14,6 +14,7 @@ export default function Home() {
   const [newStudentName, setNewStudentName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -40,9 +41,8 @@ export default function Home() {
   };
 
   const deleteStudent = (id: string) => {
-    if (confirm('確定要移除這位學生的紀錄嗎？')) {
-      setStudents(students.filter(s => s.id !== id));
-    }
+    // Confirmation is handled by the UI button state now
+    setStudents(students.filter(s => s.id !== id));
   };
 
   const generateQRCodeUrl = (studentId: string) => {
@@ -137,17 +137,31 @@ export default function Home() {
                 key={student.id}
                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
               >
-                {/* 刪除按鈕 (Moved to root for better clickability) */}
+                {/* 刪除按鈕 (Two-step confirmation) */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    deleteStudent(student.id);
+                    if (confirmDeleteId === student.id) {
+                      deleteStudent(student.id);
+                      setConfirmDeleteId(null);
+                    } else {
+                      setConfirmDeleteId(student.id);
+                      // Auto-cancel after 3 seconds
+                      setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
+                    }
                   }}
-                  className="absolute top-2 right-2 p-3 bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm z-50 active:scale-95 border border-red-100"
-                  title="移除學生"
+                  className={`absolute top-2 right-2 p-3 rounded-xl transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
+                    ? 'bg-red-600 text-white border-red-600 animate-pulse'
+                    : 'bg-red-50 text-red-500 hover:bg-red-600 hover:text-white border-red-100'
+                    }`}
+                  title={confirmDeleteId === student.id ? "再次點擊以確認刪除" : "移除學生"}
                 >
-                  <Trash2 className="w-5 h-5" />
+                  {confirmDeleteId === student.id ? (
+                    <span className="text-xs font-bold whitespace-nowrap">確認?</span>
+                  ) : (
+                    <Trash2 className="w-5 h-5" />
+                  )}
                 </button>
 
                 {/* 卡片頂部裝飾條 (Course Theme Color) */}
