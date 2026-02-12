@@ -150,12 +150,12 @@ export default function Home() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      if (confirm('確定要移除這位學生嗎？')) deleteStudent(student.id);
+                      deleteStudent(student.id);
                     }}
-                    className="absolute top-2 right-2 p-2 bg-white/90 text-slate-400 hover:bg-red-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
+                    className="absolute top-2 right-2 p-3 bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm z-20 active:scale-95 border border-red-100"
                     title="移除學生"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
 
                   {/* QR Code 下載 (Always visible) */}
