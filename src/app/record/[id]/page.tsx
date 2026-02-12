@@ -135,9 +135,10 @@ export default function RecordPage() {
         }
     };
 
-    const generateQRCodeUrl = (studentId: string) => {
+    const generateQRCodeUrl = (studentId: string, studentName: string) => {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}/feedback/${studentId}`)}`;
+        const feedbackUrl = `${baseUrl}/feedback/${studentId}?name=${encodeURIComponent(studentName)}`;
+        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(feedbackUrl)}`;
     };
 
     if (uploadSuccess) {
@@ -151,13 +152,13 @@ export default function RecordPage() {
 
                 <div className="bg-white p-4 rounded-2xl shadow-xl mb-8">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={generateQRCodeUrl(studentId)} alt="QR Code" className="w-64 h-64" />
+                    <img src={generateQRCodeUrl(studentId, student?.name || '')} alt="QR Code" className="w-64 h-64" />
                 </div>
 
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     <button
                         onClick={() => {
-                            const url = `${window.location.origin}/feedback/${studentId}`;
+                            const url = `${window.location.origin}/feedback/${studentId}?name=${encodeURIComponent(student?.name || '')}`;
                             navigator.clipboard.writeText(url).then(() => alert('已複製連結！'));
                         }}
                         className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/10"

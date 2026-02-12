@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Play, Pause, Download, Volume2, User, Loader2, Music4, CheckCircle } from 'lucide-react';
 import { storage } from '@/lib/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
@@ -13,7 +13,9 @@ interface Student {
 
 export default function FeedbackPage() {
     const params = useParams();
+    const searchParams = useSearchParams();
     const studentId = params?.id as string;
+    const studentNameFromUrl = searchParams.get('name');
 
     const [student, setStudent] = useState<Student | null>(null);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -29,12 +31,16 @@ export default function FeedbackPage() {
     useEffect(() => {
         if (!studentId) return;
 
-        // Determine student name from ID locally for now
-        const savedStudents = localStorage.getItem('students');
-        if (savedStudents) {
-            const students: Student[] = JSON.parse(savedStudents);
-            const found = students.find(s => s.id === studentId);
-            if (found) setStudent(found);
+        // Try to get name from URL first (for student viewing), then localStorage (for teacher preview)
+        if (studentNameFromUrl) {
+            setStudent({ id: studentId, name: studentNameFromUrl });
+        } else {
+            const savedStudents = localStorage.getItem('students');
+            if (savedStudents) {
+                const students: Student[] = JSON.parse(savedStudents);
+                const found = students.find(s => s.id === studentId);
+                if (found) setStudent(found);
+            }
         }
 
         // Construct Firebase Storage URL

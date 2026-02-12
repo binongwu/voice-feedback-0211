@@ -45,9 +45,10 @@ export default function Home() {
     setStudents(students.filter(s => s.id !== id));
   };
 
-  const generateQRCodeUrl = (studentId: string) => {
+  const generateQRCodeUrl = (studentId: string, studentName: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${baseUrl}/feedback/${studentId}`)}`;
+    const feedbackUrl = `${baseUrl}/feedback/${studentId}?name=${encodeURIComponent(studentName)}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(feedbackUrl)}`;
   };
 
   // 隨機分配課程卡片顏色
@@ -176,7 +177,7 @@ export default function Home() {
 
                   {/* QR Code 下載 (Always visible) */}
                   <a
-                    href={generateQRCodeUrl(student.id)}
+                    href={generateQRCodeUrl(student.id, student.name)}
                     download={`qrcode-${student.name}.png`}
                     className="absolute top-2 left-2 p-2 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm"
                     title="下載 QR Code"
