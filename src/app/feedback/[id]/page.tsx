@@ -133,6 +133,7 @@ export default function FeedbackPage() {
 
                         <div className="text-center mb-8">
                             <p className="text-slate-500 font-medium">
+                                Hi <span className="text-emerald-600 font-bold">{student?.name || '同學'}</span>，<br />
                                 老師已經完成了你的寫作批改，<br />點擊下方按鈕收聽回饋。
                             </p>
                         </div>
@@ -151,12 +152,8 @@ export default function FeedbackPage() {
                             </div>
                         </div>
 
-                        {/* 按鈕群 */}
-                        <div className="flex items-center justify-center gap-6 sm:gap-10 mb-6">
-                            <button className="p-4 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full hover:bg-emerald-50">
-                                <Volume2 className="w-6 h-6" />
-                            </button>
-
+                        {/* 按鈕群 (Simplified: Only Play Button) */}
+                        <div className="flex items-center justify-center mb-8">
                             <button
                                 onClick={togglePlay}
                                 className="w-24 h-24 sm:w-28 sm:h-28 bg-emerald-500 text-white rounded-[32px] flex items-center justify-center shadow-xl shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all group hover:bg-emerald-400 border-4 border-emerald-100/50"
@@ -167,20 +164,13 @@ export default function FeedbackPage() {
                                     <Play className="w-10 h-10 sm:w-12 sm:h-12 fill-current ml-2" />
                                 )}
                             </button>
-
-                            <a
-                                href={audioUrl || '#'}
-                                download={`feedback-${studentId}.webm`}
-                                className={`p-4 text-slate-300 hover:text-emerald-500 transition-colors bg-slate-50 rounded-full hover:bg-emerald-50 ${!audioUrl ? 'opacity-50 pointer-events-none' : ''}`}
-                            >
-                                <Download className="w-6 h-6" />
-                            </a>
                         </div>
 
-                        {/* 提示語 */}
+                        {/* 提示語 & 下載連結 */}
                         <div className="text-center bg-orange-50/50 p-4 mb-6 rounded-xl border border-orange-100/50">
                             <p className="text-orange-600/90 text-xs font-medium leading-relaxed">
-                                💡 貼心提醒：<br />系統僅保留最新的批改回饋，<br />若有需要請自行下載保存喔！
+                                💡 貼心提醒：<br />系統僅保留最新的批改回饋，<br />
+                                若有需要請 <a href={audioUrl || '#'} download={`feedback-${studentId}.webm`} className="underline font-bold hover:text-orange-800 cursor-pointer">點此自行下載保存</a> 喔！
                             </p>
                         </div>
                         <div className="text-center">
