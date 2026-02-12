@@ -77,7 +77,7 @@ export default function RecordPage() {
                 stream.getTracks().forEach(track => track.stop());
             };
 
-            mediaRecorderRef.current.start();
+            mediaRecorderRef.current.start(1000); // Record in 1-second chunks for better stability
             setIsRecording(true);
             setRecordingTime(0);
 

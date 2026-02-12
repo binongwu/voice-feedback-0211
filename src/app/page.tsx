@@ -90,7 +90,7 @@ export default function Home() {
             <div>
               <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
                 508寫作批改回饋
-                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1342</span>
+                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1355</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
             </div>
@@ -141,30 +141,9 @@ export default function Home() {
                         <QrCode className="w-4 h-4" />
                       </a>
 
-                      {/* 刪除按鈕 */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (confirmDeleteId === student.id) {
-                            deleteStudent(student.id);
-                            setConfirmDeleteId(null);
-                          } else {
-                            setConfirmDeleteId(student.id);
-                            setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
-                          }
-                        }}
-                        className={`p-1.5 rounded-lg transition-all ${confirmDeleteId === student.id
-                          ? 'bg-red-600 text-white animate-pulse'
-                          : 'text-slate-400 hover:text-red-500 hover:bg-red-50'
-                          }`}
-                        title={confirmDeleteId === student.id ? "確認刪除" : "移除"}
-                      >
-                        {confirmDeleteId === student.id ? (
-                          <span className="text-[10px] font-bold px-1">確認</span>
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
+                      {/* 刪除按鈕 (暫時隱藏) */}
+                      <button className="hidden">
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
