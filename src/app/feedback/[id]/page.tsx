@@ -83,7 +83,7 @@ export default function FeedbackPage() {
     if (isLoading) return <div className="min-h-screen bg-emerald-50 flex items-center justify-center"><Loader2 className="w-10 h-10 text-emerald-500 animate-spin" /></div>;
 
     return (
-        <div className="min-h-screen bg-emerald-50/50 font-sans flex flex-col items-center justify-start pt-12 sm:pt-24 p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-emerald-50/50 font-sans flex flex-col items-center justify-center p-6 relative overflow-hidden">
 
             {/* 背景裝飾 (Circle Patterns like e-Learning platforms) */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-100 rounded-full opacity-50 blur-3xl"></div>
@@ -125,12 +125,7 @@ export default function FeedbackPage() {
                                 // Ignore errors if no URL is set (initial state)
                                 if (!audioUrl) return;
 
-                                console.error("Audio playback error", e);
-                                // Only show error if we were trying to play
-                                if (isPlaying) {
-                                    setError('播放不順暢，請試著重新點擊播放');
-                                    setIsPlaying(false);
-                                }
+                                console.error("Audio playback error (suppressed for UI):", e);
                             }}
                             className="hidden"
                         />
@@ -142,12 +137,7 @@ export default function FeedbackPage() {
                             </div>
                         )}
 
-                        <div className="text-center mb-8">
-                            <p className="text-slate-500 font-medium">
-                                Hi <span className="text-emerald-600 font-bold">{student?.name || '同學'}</span>，<br />
-                                老師已經完成了你的寫作批改，<br />點擊下方按鈕收聽回饋。
-                            </p>
-                        </div>
+
 
                         {/* 進度條 */}
                         <div className="mb-8">
@@ -175,6 +165,14 @@ export default function FeedbackPage() {
                                     <Play className="w-10 h-10 sm:w-12 sm:h-12 fill-current ml-2" />
                                 )}
                             </button>
+                        </div>
+
+                        {/* 問候語 (Moved below play button) */}
+                        <div className="text-center mb-6">
+                            <p className="text-slate-500 font-medium">
+                                Hi <span className="text-emerald-600 font-bold">{student?.name || '同學'}</span>，<br />
+                                老師已經完成了你的寫作批改。
+                            </p>
                         </div>
 
                         {/* 提示語 & 下載連結 */}
