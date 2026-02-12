@@ -24,6 +24,7 @@ export default function RecordPage() {
     const [uploading, setUploading] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -95,8 +96,7 @@ export default function RecordPage() {
         try {
             const metadata = { contentType: 'audio/webm', cacheControl: 'public, max-age=0, must-revalidate' };
             await uploadBytes(storageRef, audioBlob, metadata);
-            // alert('上傳成功！'); // Removed alert for smoother UX
-            router.push('/');
+            setUploadSuccess(true); // Don't redirect, show success screen
         } catch (error) {
             console.error('Firebase Upload error:', error);
             alert('上傳失敗。');
@@ -122,6 +122,43 @@ export default function RecordPage() {
             }
         }
     };
+
+    const generateQRCodeUrl = (studentId: string) => {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`${baseUrl}/feedback/${studentId}`)}`;
+    };
+
+    if (uploadSuccess) {
+        return (
+            <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+                <div className="bg-emerald-500 rounded-full p-4 mb-6 shadow-lg shadow-emerald-500/50">
+                    <CheckCircle2 className="w-12 h-12 text-white" />
+                </div>
+                <h1 className="text-3xl font-bold text-white mb-2">上傳成功！</h1>
+                <p className="text-slate-400 mb-8">請學生掃描 QR Code 收聽回饋</p>
+
+                <div className="bg-white p-4 rounded-2xl shadow-xl mb-8">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={generateQRCodeUrl(studentId)} alt="QR Code" className="w-64 h-64" />
+                </div>
+
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                    <button
+                        onClick={() => navigator.clipboard.writeText(`${window.location.origin}/feedback/${studentId}`)}
+                        className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition-colors border border-slate-700"
+                    >
+                        複製連結
+                    </button>
+                    <Link
+                        href="/"
+                        className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all text-center shadow-lg shadow-emerald-900/20"
+                    >
+                        完成並返回首頁
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     if (!student) {
         return (
@@ -207,8 +244,8 @@ export default function RecordPage() {
                             <button
                                 onClick={isRecording ? stopRecording : startRecording}
                                 className={`relative w-32 h-32 rounded-full transition-all duration-300 flex items-center justify-center shadow-2xl z-10 group ${isRecording
-                                        ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-4 border-red-500/50 hover:border-red-500 animate-recording-pulse'
-                                        : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 shadow-red-500/40 hover:shadow-red-500/60 hover:scale-105 active:scale-95'
+                                    ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-4 border-red-500/50 hover:border-red-500 animate-recording-pulse'
+                                    : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 shadow-red-500/40 hover:shadow-red-500/60 hover:scale-105 active:scale-95'
                                     }`}
                             >
                                 {isRecording ? (

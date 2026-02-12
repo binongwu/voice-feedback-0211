@@ -154,11 +154,11 @@ export default function Home() {
                     <Trash2 className="w-4 h-4" />
                   </button>
 
-                  {/* QR Code 下載 (隱藏在左上角) */}
+                  {/* QR Code 下載 (Always visible) */}
                   <a
                     href={generateQRCodeUrl(student.id)}
                     download={`qrcode-${student.name}.png`}
-                    className="absolute top-2 left-2 p-2 bg-white/20 text-white hover:bg-white hover:text-emerald-600 rounded-lg transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                    className="absolute top-2 left-2 p-2 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm"
                     title="下載 QR Code"
                     target="_blank"
                   >
@@ -169,10 +169,10 @@ export default function Home() {
                 {/* 卡片內容 */}
                 <div className="pt-12 pb-6 px-6 text-center flex-1">
                   <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{student.name}</h3>
-                  <p className="text-xs text-slate-400 font-mono bg-slate-100 inline-block px-2 py-0.5 rounded-md mb-4">
+                  <p className="text-xs text-slate-400 font-mono mb-4">
                     ID: {student.id.slice(0, 6)}...
                   </p>
-                  <p className="text-sm text-slate-500 bg-emerald-50/50 p-2 rounded-lg border border-emerald-100/50">
+                  <p className="text-sm text-slate-500 px-2">
                     點擊下方按鈕開始錄製回饋
                   </p>
                 </div>
