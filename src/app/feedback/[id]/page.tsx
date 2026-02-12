@@ -77,7 +77,7 @@ export default function FeedbackPage() {
     if (isLoading) return <div className="min-h-screen bg-emerald-50 flex items-center justify-center"><Loader2 className="w-10 h-10 text-emerald-500 animate-spin" /></div>;
 
     return (
-        <div className="min-h-screen bg-emerald-50/50 font-sans flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden">
+        <div className="min-h-screen bg-emerald-50/50 font-sans flex flex-col items-center justify-start pt-12 sm:pt-24 p-6 relative overflow-hidden">
 
             {/* 背景裝飾 (Circle Patterns like e-Learning platforms) */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-100 rounded-full opacity-50 blur-3xl"></div>
@@ -115,7 +115,13 @@ export default function FeedbackPage() {
                             src={audioUrl || ''}
                             onTimeUpdate={handleTimeUpdate}
                             onEnded={() => { setIsPlaying(false); setProgress(0); }}
-                            onError={() => setError('找不到錄音檔')}
+                            onError={(e) => {
+                                // Only show error if audioUrl exists but failed to load
+                                if (audioUrl) {
+                                    console.error("Audio playback error", e);
+                                    setError('無法播放錄音檔，請稍後再試');
+                                }
+                            }}
                             className="hidden"
                         />
 
@@ -169,6 +175,13 @@ export default function FeedbackPage() {
                                     >
                                         <Download className="w-6 h-6" />
                                     </a>
+                                </div>
+
+                                {/* 提示語 */}
+                                <div className="text-center bg-orange-50/50 p-4 mb-6 rounded-xl border border-orange-100/50">
+                                    <p className="text-orange-600/90 text-xs font-medium leading-relaxed">
+                                        💡 貼心提醒：<br />系統僅保留最新的批改回饋，<br />若有需要請自行下載保存喔！
+                                    </p>
                                 </div>
                             </>
                         )}
