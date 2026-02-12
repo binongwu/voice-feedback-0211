@@ -122,10 +122,15 @@ export default function FeedbackPage() {
                             onTimeUpdate={handleTimeUpdate}
                             onEnded={() => { setIsPlaying(false); setProgress(0); }}
                             onError={(e) => {
+                                // Ignore errors if no URL is set (initial state)
+                                if (!audioUrl) return;
+
                                 console.error("Audio playback error", e);
-                                // Don't block UI, just notify user
-                                setError('播放不順暢，請試著重新點擊播放');
-                                setIsPlaying(false);
+                                // Only show error if we were trying to play
+                                if (isPlaying) {
+                                    setError('播放不順暢，請試著重新點擊播放');
+                                    setIsPlaying(false);
+                                }
                             }}
                             className="hidden"
                         />
