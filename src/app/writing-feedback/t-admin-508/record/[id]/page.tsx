@@ -137,7 +137,8 @@ export default function RecordPage() {
 
     const generateQRCodeUrl = (studentId: string, studentName: string) => {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-        // Route Update: writing-feedback
+        // QR Code must point to the PUBLIC link, not the admin link
+        // PUBLIC: /writing-feedback/feedback/[id]
         const feedbackUrl = `${baseUrl}/writing-feedback/feedback/${studentId}?name=${encodeURIComponent(studentName)}`;
         return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(feedbackUrl)}`;
     };
@@ -158,7 +159,7 @@ export default function RecordPage() {
 
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     <Link
-                        href="/writing-feedback"
+                        href="/writing-feedback/t-admin-508" // Back to Admin Dashboard
                         className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white rounded-xl font-bold transition-all text-center shadow-lg shadow-teal-900/10 hover:-translate-y-0.5"
                     >
                         返回儀表板
@@ -172,7 +173,7 @@ export default function RecordPage() {
         return (
             <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center text-stone-400 font-mono gap-4">
                 <div className="animate-pulse">Loading Studio...</div>
-                <Link href="/writing-feedback" className="text-teal-600 hover:underline">Return to Dashboard</Link>
+                <Link href="/writing-feedback/t-admin-508" className="text-teal-600 hover:underline">Return to Dashboard</Link>
             </div>
         );
     }
@@ -187,7 +188,7 @@ export default function RecordPage() {
 
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-12">
-                    <Link href="/writing-feedback" className="w-10 h-10 rounded-full bg-white border border-stone-200 hover:border-teal-300 transition-colors flex items-center justify-center text-stone-400 hover:text-teal-700 shadow-sm">
+                    <Link href="/writing-feedback/t-admin-508" className="w-10 h-10 rounded-full bg-white border border-stone-200 hover:border-teal-300 transition-colors flex items-center justify-center text-stone-400 hover:text-teal-700 shadow-sm">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="flex-1 text-center pr-10">

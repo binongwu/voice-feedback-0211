@@ -74,7 +74,7 @@ export default function Home() {
 
     const generateQRCodeUrl = (studentId: string, studentName: string) => {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-        // Update Route to /writing-feedback/feedback
+        // Public Feedback URL remains SAME: /writing-feedback/feedback/...
         const feedbackUrl = `${baseUrl}/writing-feedback/feedback/${studentId}?name=${encodeURIComponent(studentName)}`;
         return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(feedbackUrl)}`;
     };
@@ -92,9 +92,9 @@ export default function Home() {
                         <div>
                             <h1 className="text-xl font-bold text-stone-800 tracking-tight flex items-center gap-2">
                                 {CLASS_INFO.id} 寫作回饋
-                                <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">v.Morandi-1420</span>
+                                <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">v.Admin-Secure</span>
                             </h1>
-                            <p className="text-xs text-stone-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
+                            <p className="text-xs text-stone-500 font-medium tracking-wide uppercase">Teacher's Dashboard (Private)</p>
                         </div>
                     </div>
 
@@ -150,9 +150,9 @@ export default function Home() {
                                         </div>
                                     </div>
 
-                                    {/* 第二排：錄音按鈕 (Morandi Style) */}
+                                    {/* 第二排：錄音按鈕 (Admin Link) */}
                                     <Link
-                                        href={`/writing-feedback/record/${student.id}`} // Update Route
+                                        href={`/writing-feedback/t-admin-508/record/${student.id}`} // Update Route to Admin path
                                         className="flex items-center justify-center gap-2 w-full py-2.5 bg-stone-50 hover:bg-teal-50 text-teal-800 border border-stone-200 hover:border-teal-200 active:bg-teal-100 rounded-lg font-bold transition-all text-sm group-hover:shadow-sm"
                                     >
                                         <Mic className="w-4 h-4 text-teal-600 group-hover:text-teal-700" />
@@ -166,7 +166,7 @@ export default function Home() {
             </main>
 
             <footer className="bg-stone-50 border-t border-stone-200 mt-20 py-8 text-center text-stone-400 text-sm font-light tracking-wide">
-                <p>Voice Feedback System &middot; Class {CLASS_INFO.id}</p>
+                <p>Voice Feedback System &middot; Class {CLASS_INFO.id} (Secure Zone)</p>
             </footer>
         </div>
     );

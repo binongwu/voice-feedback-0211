@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { BookOpen, Mic } from 'lucide-react';
+import { BookOpen, Mic, Lock } from 'lucide-react';
 import { CLASS_INFO } from '@/config/class-info';
 
 export default function RootPage() {
@@ -33,17 +33,23 @@ export default function RootPage() {
         {/* App Links */}
         <div className="grid gap-4">
           <Link
-            href="/writing-feedback"
-            className="group flex items-center gap-4 bg-white p-5 rounded-2xl shadow-sm hover:shadow-lg border border-stone-200 hover:border-teal-200 transition-all duration-300 hover:-translate-y-1"
+            href="/writing-feedback/t-admin-508" // Secure Path
+            className="group flex items-center gap-4 bg-white p-5 rounded-2xl shadow-sm hover:shadow-lg border border-stone-200 hover:border-teal-200 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
+            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Lock className="w-12 h-12 text-teal-900" />
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors z-10">
               <Mic className="w-6 h-6" />
             </div>
-            <div className="text-left">
-              <h3 className="font-bold text-stone-700 text-lg group-hover:text-teal-800">寫作批改回饋</h3>
+            <div className="text-left z-10">
+              <h3 className="font-bold text-stone-700 text-lg group-hover:text-teal-800 flex items-center gap-2">
+                寫作批改回饋 <span className="text-[10px] bg-stone-100 px-1.5 py-0.5 rounded text-stone-500 font-normal border border-stone-200">Teacher Only</span>
+              </h3>
               <p className="text-xs text-stone-400 font-medium">Writing Voice Feedback</p>
             </div>
-            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-teal-400">
+            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-teal-400 z-10">
               →
             </div>
           </Link>
