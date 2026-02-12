@@ -137,6 +137,19 @@ export default function Home() {
                 key={student.id}
                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
               >
+                {/* 刪除按鈕 (Moved to root for better clickability) */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteStudent(student.id);
+                  }}
+                  className="absolute top-2 right-2 p-3 bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm z-50 active:scale-95 border border-red-100"
+                  title="移除學生"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+
                 {/* 卡片頂部裝飾條 (Course Theme Color) */}
                 <div className={`h-24 ${getCardColor(student.name)} relative overflow-hidden`}>
                   <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
@@ -145,18 +158,7 @@ export default function Home() {
                       {student.name.charAt(0)}
                     </div>
                   </div>
-                  {/* 刪除按鈕 (Always visible) */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      deleteStudent(student.id);
-                    }}
-                    className="absolute top-2 right-2 p-3 bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm z-20 active:scale-95 border border-red-100"
-                    title="移除學生"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+
 
                   {/* QR Code 下載 (Always visible) */}
                   <a
