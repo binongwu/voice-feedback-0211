@@ -53,12 +53,12 @@ export default function RecordPage() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            // Detect best supported MIME type
-            let mimeType = 'audio/webm';
-            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+            // Detect best supported MIME type (Prioritize MP4 for better seeking/metadata support)
+            let mimeType = 'audio/webm'; // Default fallback
+            if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                mimeType = 'audio/mp4';
+            } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
                 mimeType = 'audio/webm;codecs=opus';
-            } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                mimeType = 'audio/mp4'; // Safari fallback
             }
 
             mimeTypeRef.current = mimeType;
