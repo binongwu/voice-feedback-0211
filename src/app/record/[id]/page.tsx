@@ -28,18 +28,37 @@ export default function RecordPage({ params }: { params: { id: string } }) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const unwrappedParams = params;
 
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
-        const savedStudents = localStorage.getItem('students');
-        if (savedStudents) {
-            const students: Student[] = JSON.parse(savedStudents);
-            const foundStudent = students.find(s => s.id === unwrappedParams.id);
-            if (foundStudent) {
-                setStudent(foundStudent);
+        if (!unwrappedParams.id) {
+            setIsLoading(false); // If no ID, stop loading and let the next check handle it or redirect
+            return;
+        }
+
+        // Give a small delay to ensure hydration is complete
+        const timer = setTimeout(() => {
+            const savedStudents = localStorage.getItem('students');
+            if (savedStudents) {
+                const students: Student[] = JSON.parse(savedStudents);
+                const foundStudent = students.find(s => s.id === unwrappedParams.id);
+
+                if (foundStudent) {
+                    setStudent(foundStudent);
+                } else {
+                    console.error('Student not found in localStorage');
+                    alert('找不到學生資料，請重新從首頁進入');
+                    router.push('/');
+                }
             } else {
-                alert('找不到學生資料');
+                console.error('No students data found');
+                alert('找不到學生資料，請重新從首頁進入'); // Added alert for no data found
                 router.push('/');
             }
-        }
+            setIsLoading(false);
+        }, 100);
+
+        return () => clearTimeout(timer);
     }, [unwrappedParams.id, router]);
 
     const startRecording = async () => {
