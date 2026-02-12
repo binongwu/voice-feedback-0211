@@ -1,59 +1,56 @@
-# 508 Class Design System (508 綠野仙蹤風格)
+# 508 Class Design System (Morandi Green Edition)
 
-這份文件定義了 `508寫作批改回饋` 網站的 UI/UX 設計規範。
-未來的開發請嚴格遵守此風格，以保持視覺一致性。
+這份文件定義了 `508寫作批改回饋` 以及未來應用程式的設計規範。
+核心理念：**知性、溫暖、質感** (Inspired by Morandi Green & Stone)。
 
-## 1. 核心色彩 (Color Palette)
+## 1. 專案結構原則 (Structure)
 
-### 主色調 (Primary) - 翡翠綠
-用於主要按鈕、強調文字、圖標背景。
-- **Primary**: `bg-emerald-500` (錄音鈕、重要標示)
-- **Primary Hover**: `hover:bg-emerald-600`
-- **Primary Light**: `bg-emerald-50` (背景底色、次要按鈕底色)
-- **Border**: `border-emerald-500` (強調邊框)
+未來的每一個新功能或網頁應用程式，都必須建立在 `src/app/` 底下的獨立資料夾中。
+根目錄 `src/app/page.tsx` 僅作為入口大廳 (Hub)。
 
-### 輔助色 (Secondary) - 檸檬綠/青色
-用於區塊背景、裝飾性元素，創造清新感。
-- **Avatar Background**: `bg-lime-100` (頭像區底色)
-- **Gradient**: `from-emerald-400 to-teal-500` (大標題背景、漸層卡片)
+### 命名規範
+- `src/app/writing-feedback/` : 寫作語音回饋系統 (目前專案)
+- `src/app/[app-name]/` : 未來的新專案
 
-### 中性色 (Neutral) - 岩灰
-用於文字、邊框、非強調背景。
-- **Text Main**: `text-slate-800` (標題、內文)
-- **Text Muted**: `text-slate-500` / `text-slate-400` (次要資訊)
-- **Background**: `bg-slate-50` (全站背景)
-- **Border**: `border-slate-100` / `border-slate-200` (卡片邊框)
+## 2. 核心色彩 (Color Palette - Morandi)
 
-### 功能色 (Functional)
-- **Delete/Danger**: `text-red-500`, `bg-red-50` (刪除按鈕)
-- **Warning/Tips**: `bg-orange-50`, `text-orange-600` (提示框)
+我們捨棄了高飽和度的「科技綠」，改用低飽和度、帶有灰調的色彩，營造高級的閱讀體驗。
 
-## 2. 元件設計 (Components)
+### 主色調 (Primary) - 鼠尾草綠 / 深青 (Teal/Sage)
+用於主要按鈕、圖標、強調文字。
+- **Primary**: `bg-teal-700` (Hex: #0F766E)
+- **Primary Hover**: `hover:bg-teal-800`
+- **Primary Light**: `bg-teal-50` (背景底色)
+- **Accent**: `text-teal-600`
+
+### 輔助色 (Secondary) - 暖石色 (Stone/Cream)
+用於全站背景，取代刺眼的純白。
+- **Page Background**: `bg-stone-50` (Hex: #FAFAF9) 或 `bg-[#FDFDF8]` (米白)
+- **Card Background**: `bg-white` (搭配 Stone-100 邊框)
+- **Text Main**: `text-stone-800` (深暖灰)
+- **Text Muted**: `text-stone-500` / `text-stone-400`
+
+### 強調色 (Accent) - 陶土紅 / 焦糖 (Terra Cotta)
+用於刪除、錄音中、提示訊息。
+- **Recording/Active**: `text-rose-600`, `bg-rose-50`
+- **Warning/Tips**: `text-orange-600`, `bg-orange-50`
+
+## 3. 元件設計 (Components)
 
 ### 卡片 (Cards)
-- **容器**: `bg-white rounded-xl border border-slate-100 shadow-sm`
-- **互動**: `hover:shadow-md transition-all duration-200`
-- **極簡風格**: 移除不必要的 Padding，使用緊湊佈局。
+- **質感**: 必須有細微的邊框 (`border-stone-100`) 與柔和陰影。
+- **陰影**: `shadow-sm` 至 `shadow-xl` (但在 Hover 時才明顯)。
+- **圓角**: `rounded-xl` 至 `rounded-3xl` (特別是 Modal 或大區塊)。
 
-### 按鈕 (Buttons)
-- **主要按鈕 (Solid)**: 
-  - `bg-emerald-500 text-white rounded-lg font-bold shadow-md`
-  - `hover:scale-105 active:scale-95` (微動畫)
-- **次要按鈕 (Outline)**:
-  - `bg-white text-emerald-600 border-2 border-emerald-500`
-  - `hover:bg-emerald-500 hover:text-white`
-- **圖標按鈕 (Icon Only)**:
-  - `p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50`
+### 字體 (Typography)
+- **標題**: 建議使用 `font-serif` (例如 Times 或 Noto Serif) 於大標題，增加書卷氣。
+- **內文**: 使用 `font-sans` (Inter/System) 保持易讀性。
 
-### 裝飾元素 (Visuals)
-- **點狀紋理 (Dot Pattern)**: 在卡片頭部或背景使用 `pattern-dots` (需配合 CSS)。
-- **可愛動物 (Cute Animals)**: 使用 Emoji 作為預設頭像，增加親和力。
-- **圓角 (Radius)**: 統一使用 `rounded-xl` 或 `rounded-2xl`，避免直角。
+## 4. 互動體驗
+- **按鈕**: 實心按鈕使用 `bg-teal-700`，文字為白。
+- **錄音介面**: 錄音時使用「波紋動畫」與紅色/玫瑰色系提示。
 
-## 3. 版面佈局 (Layout)
-- **高密度網格**: 老師儀表板使用 `grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6`，最大化資訊密度。
-- **最大寬度**: `max-w-[1600px]` (Dashboard), `max-w-lg` (Mobile/Detail View).
-
-## 4. 互動體驗 (Interaction)
-- **回饋感**: 所有可點擊元素必須有 `hover` 變色或 `scale` 縮放效果。
-- **無縫體驗**: 使用 `localStorage` 作為輕量級資料暫存，減少非必要的後端請求。
+---
+**版本紀錄**:
+- v1.0 (Emerald Clean): 初始翡翠綠風格。
+- v2.0 (Morandi Green): 2026/02/12 更新，改為莫蘭迪色系與模組化資料夾結構。
