@@ -47,8 +47,22 @@ export default function Home() {
     const [isClient, setIsClient] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
+    // --- Auth State ---
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [passwordInput, setPasswordInput] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
     useEffect(() => {
         setIsClient(true);
+        // Check session first
+        const auth = sessionStorage.getItem('teacher_auth');
+        if (auth === 'true') {
+            setIsAuthenticated(true);
+            loadStudents();
+        }
+    }, []);
+
+    const loadStudents = () => {
         const savedStudents = localStorage.getItem('students');
         if (savedStudents) {
             const parsed = JSON.parse(savedStudents);
@@ -60,13 +74,27 @@ export default function Home() {
         } else {
             setStudents(DEFAULT_STUDENTS);
         }
-    }, []);
+    };
 
     useEffect(() => {
-        if (isClient && students.length > 0) {
+        // Save only if authenticated and loaded
+        if (isClient && isAuthenticated && students.length > 0) {
             localStorage.setItem('students', JSON.stringify(students));
         }
-    }, [students, isClient]);
+    }, [students, isClient, isAuthenticated]);
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passwordInput === '7683-') {
+            setIsAuthenticated(true);
+            sessionStorage.setItem('teacher_auth', 'true');
+            setErrorMsg('');
+            loadStudents();
+        } else {
+            setErrorMsg('Passcode Incorrect');
+            setPasswordInput('');
+        }
+    };
 
     const deleteStudent = (id: string) => {
         setStudents(students.filter(s => s.id !== id));
@@ -74,13 +102,58 @@ export default function Home() {
 
     const generateQRCodeUrl = (studentId: string, studentName: string) => {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-        // Public Feedback URL remains SAME: /writing-feedback/feedback/...
         const feedbackUrl = `${baseUrl}/writing-feedback/feedback/${studentId}?name=${encodeURIComponent(studentName)}`;
         return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(feedbackUrl)}`;
     };
 
+    if (!isClient) return null;
+
+    // --- Login Screen ---
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4 selection:bg-teal-100">
+                <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-stone-200 animate-in zoom-in-95 duration-300">
+                    <div className="flex justify-center mb-6">
+                        <div className="p-3 bg-teal-50 rounded-full ring-4 ring-teal-50/50">
+                            <School className="w-8 h-8 text-teal-700" />
+                        </div>
+                    </div>
+                    <h2 className="text-xl font-bold text-stone-800 text-center mb-1 font-serif">教師管理區</h2>
+                    <p className="text-stone-400 text-center text-sm mb-6 uppercase tracking-wider font-medium">Teacher Access Only</p>
+
+                    <form onSubmit={handleLogin}>
+                        <input
+                            type="password"
+                            value={passwordInput} // Managed input
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4 bg-stone-50 text-center tracking-[0.5em] font-mono text-lg transition-all"
+                            placeholder="•••••"
+                            autoFocus
+                        />
+
+                        {errorMsg && <p className="text-rose-500 text-xs text-center mb-4 font-bold animate-pulse">{errorMsg}</p>}
+
+                        <button
+                            type="submit"
+                            className="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-xl transition-all shadow-md active:scale-95 shadow-teal-900/10 hover:shadow-lg"
+                        >
+                            Login
+                        </button>
+                    </form>
+
+                    <div className="mt-6 text-center">
+                        <Link href="/" className="text-xs text-stone-400 hover:text-teal-600 transition-colors">
+                            ← Return to Hub
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // --- Authenticated Dashboard ---
     return (
-        <div className="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-teal-100 selection:text-teal-900">
+        <div className="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-teal-100 selection:text-teal-900 animate-in fade-in duration-500">
 
             {/* 頂部導覽列 (Sage & Stone Style) */}
             <header className="bg-white/80 border-b border-stone-200 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
@@ -103,6 +176,12 @@ export default function Home() {
                             <GraduationCap className="w-4 h-4 text-teal-600" />
                             學生總數: {students.length}
                         </span>
+                        <button
+                            onClick={() => { sessionStorage.removeItem('teacher_auth'); setIsAuthenticated(false); }}
+                            className="text-xs text-rose-500 hover:text-rose-700 ml-4 font-bold border border-rose-100 bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100 transition-colors"
+                        >
+                            Logout
+                        </button>
                     </div>
                 </div>
             </header>
@@ -152,7 +231,7 @@ export default function Home() {
 
                                     {/* 第二排：錄音按鈕 (Admin Link) */}
                                     <Link
-                                        href={`/writing-feedback/t-admin-508/record/${student.id}`} // Update Route to Admin path
+                                        href={`/writing-feedback/t-admin-508/record/${student.id}`}
                                         className="flex items-center justify-center gap-2 w-full py-2.5 bg-stone-50 hover:bg-teal-50 text-teal-800 border border-stone-200 hover:border-teal-200 active:bg-teal-100 rounded-lg font-bold transition-all text-sm group-hover:shadow-sm"
                                     >
                                         <Mic className="w-4 h-4 text-teal-600 group-hover:text-teal-700" />
