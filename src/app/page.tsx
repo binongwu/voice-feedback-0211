@@ -96,7 +96,8 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
-                508寫作批改回饋 <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                508寫作批改回饋
+                <span className="text-xs font-mono text-slate-400 font-normal ml-2 bg-slate-100 px-2 py-0.5 rounded-full">v.20260212-1334</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
             </div>
@@ -160,8 +161,8 @@ export default function Home() {
                   </button>
 
                   {/* 卡片頂部 */}
-                  <div className={`h-16 ${getCardColor(student.name)} relative overflow-hidden flex items-center justify-center`}>
-                    <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
+                  <div className="h-16 bg-lime-100/90 relative overflow-hidden flex items-center justify-center border-b border-lime-200">
+                    <div className="absolute inset-0 bg-emerald-500/5 opacity-50 pattern-dots transform rotate-12 scale-150"></div>
 
                     {/* QR Code */}
                     <a
