@@ -156,7 +156,7 @@ export default function FeedbackPage() {
                     <p className="text-stone-400 text-sm mb-8 font-medium">您的寫作回饋已送達</p>
 
                     {/* Audio Player Card */}
-                    <div className="w-full bg-stone-50 rounded-2xl p-6 mb-8 border border-stone-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                    <div className="w-full bg-stone-50 rounded-2xl p-6 mb-6 border border-stone-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
                         {loading ? (
                             <div className="flex flex-col items-center py-4 gap-3">
                                 <div className="w-8 h-8 border-2 border-stone-200 border-t-teal-600 rounded-full animate-spin"></div>
@@ -207,7 +207,7 @@ export default function FeedbackPage() {
                     </div>
 
                     {/* Tips / Footer */}
-                    <div className="w-full mt-auto">
+                    <div className="w-full mt-6">
                         <div className="bg-orange-50/80 rounded-xl p-5 border border-orange-100/50">
                             <h4 className="flex items-center gap-2 text-orange-800 text-sm font-bold mb-2">
                                 <Volume2 className="w-4 h-4" />
