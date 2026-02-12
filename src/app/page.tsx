@@ -71,7 +71,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-baseline gap-1">
-                Voice Feedback <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
+                508寫作批改回饋 <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
               </h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Teacher's Dashboard</p>
             </div>
@@ -132,84 +132,80 @@ export default function Home() {
             <p className="text-slate-400 mb-6">目前還沒有學生資料，請在上方輸入姓名新增。</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredStudents.map((student) => (
-              <div
-                key={student.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
-              >
-                {/* 刪除按鈕 (Two-step confirmation) */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (confirmDeleteId === student.id) {
-                      deleteStudent(student.id);
-                      setConfirmDeleteId(null);
-                    } else {
-                      setConfirmDeleteId(student.id);
-                      // Auto-cancel after 3 seconds
-                      setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
-                    }
-                  }}
-                  className={`absolute top-2 right-2 p-3 rounded-xl transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
-                    ? 'bg-red-600 text-white border-red-600 animate-pulse'
-                    : 'bg-red-50 text-red-500 hover:bg-red-600 hover:text-white border-red-100'
-                    }`}
-                  title={confirmDeleteId === student.id ? "再次點擊以確認刪除" : "移除學生"}
-                >
-                  {confirmDeleteId === student.id ? (
-                    <span className="text-xs font-bold whitespace-nowrap">確認?</span>
-                  ) : (
-                    <Trash2 className="w-5 h-5" />
-                  )}
-                </button>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {filteredStudents.map((student) => {
+              // Deterministic Animal Avatar
+              const animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦉', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗'];
+              const avatar = animals[student.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % animals.length];
 
-                {/* 卡片頂部裝飾條 (Course Theme Color) */}
-                <div className={`h-24 ${getCardColor(student.name)} relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-full p-1.5 shadow-lg flex items-center justify-center z-10">
-                    <div className={`w-full h-full rounded-full ${getCardColor(student.name)} flex items-center justify-center text-white text-2xl font-bold uppercase`}>
-                      {student.name.charAt(0)}
+              return (
+                <div
+                  key={student.id}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
+                >
+                  {/* 刪除按鈕 (Two-step confirmation) */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (confirmDeleteId === student.id) {
+                        deleteStudent(student.id);
+                        setConfirmDeleteId(null);
+                      } else {
+                        setConfirmDeleteId(student.id);
+                        setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
+                      }
+                    }}
+                    className={`absolute top-2 right-2 p-2 rounded-lg transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
+                      ? 'bg-red-600 text-white border-red-600 animate-pulse'
+                      : 'bg-red-50 text-red-500 hover:bg-red-600 hover:text-white border-red-100'
+                      }`}
+                    title={confirmDeleteId === student.id ? "再次點擊以確認刪除" : "移除學生"}
+                  >
+                    {confirmDeleteId === student.id ? (
+                      <span className="text-xs font-bold whitespace-nowrap">確認?</span>
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {/* 卡片頂部 (Compact) */}
+                  <div className={`h-20 ${getCardColor(student.name)} relative overflow-hidden flex items-center justify-center`}>
+                    <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
+
+                    {/* QR Code 下載 (Top Left) */}
+                    <a
+                      href={generateQRCodeUrl(student.id, student.name)}
+                      download={`qrcode-${student.name}.png`}
+                      className="absolute top-2 left-2 p-2 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
+                      title="下載 QR Code"
+                      target="_blank"
+                    >
+                      <QrCode className="w-4 h-4" />
+                    </a>
+
+                    {/* Avatar */}
+                    <div className="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center text-3xl z-10 mt-6 transform translate-y-4">
+                      {avatar}
                     </div>
                   </div>
 
+                  {/* 卡片內容 (Compact) */}
+                  <div className="pt-8 pb-4 px-4 text-center flex-1">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4 line-clamp-1">{student.name}</h3>
 
-                  {/* QR Code 下載 (Always visible) */}
-                  <a
-                    href={generateQRCodeUrl(student.id, student.name)}
-                    download={`qrcode-${student.name}.png`}
-                    className="absolute top-2 left-2 p-2 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm"
-                    title="下載 QR Code"
-                    target="_blank"
-                  >
-                    <QrCode className="w-4 h-4" />
-                  </a>
+                    {/* 開始錄音按鈕 */}
+                    <Link
+                      href={`/record/${student.id}`}
+                      className="flex items-center justify-center gap-2 w-full py-2 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg shadow-emerald-500/20 text-sm"
+                    >
+                      <Mic className="w-4 h-4" />
+                      開始錄音
+                    </Link>
+                  </div>
                 </div>
-
-                {/* 卡片內容 */}
-                <div className="pt-12 pb-6 px-6 text-center flex-1">
-                  <h3 className="text-lg font-bold text-slate-800 mb-1 line-clamp-1">{student.name}</h3>
-                  <p className="text-xs text-slate-400 font-mono mb-4">
-                    ID: {student.id.slice(0, 6)}...
-                  </p>
-                  <p className="text-sm text-slate-500 px-2">
-                    點擊下方按鈕開始錄製回饋
-                  </p>
-                </div>
-
-                {/* 底部按鈕 */}
-                <div className="p-4 bg-slate-50 border-t border-slate-100">
-                  <Link
-                    href={`/record/${student.id}`}
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg shadow-emerald-500/20"
-                  >
-                    <Mic className="w-5 h-5" />
-                    開始錄音
-                  </Link>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </main>

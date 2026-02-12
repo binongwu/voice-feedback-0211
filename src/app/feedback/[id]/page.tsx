@@ -100,8 +100,12 @@ export default function FeedbackPage() {
 
                         <div className="relative z-10">
                             <div className="w-20 h-20 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                                <span className="text-4xl font-bold text-emerald-600">
-                                    {student?.name.charAt(0) || 'S'}
+                                <span className="text-5xl">
+                                    {(() => {
+                                        const name = student?.name || 'S';
+                                        const animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦉', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗'];
+                                        return animals[name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % animals.length];
+                                    })()}
                                 </span>
                             </div>
                             <h1 className="text-2xl font-bold text-white mb-1 drop-shadow-sm">
