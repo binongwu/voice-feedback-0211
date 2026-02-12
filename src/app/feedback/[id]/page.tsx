@@ -218,10 +218,12 @@ export default function FeedbackPage() {
                                     </p>
                                 </div>
 
-                                {/* 提示語 (已移除下載連結) */}
+                                {/* 提示語 */}
                                 <div className="text-center bg-orange-50/50 p-4 mb-6 rounded-xl border border-orange-100/50">
-                                    <p className="text-orange-600/90 text-xs font-medium leading-relaxed">
-                                        💡 貼心提醒：系統僅保留最新的批改回饋。
+                                    <p className="text-orange-600/90 text-xs font-medium leading-relaxed text-left inline-block">
+                                        💡 貼心提醒：<br />
+                                        • 如果無法順利聽到錄音，重新按一次播放就可以囉！<br />
+                                        • 系統僅保留最新的批改回饋。
                                     </p>
                                 </div>
 
