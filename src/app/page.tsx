@@ -87,52 +87,19 @@ export default function Home() {
       </header>
 
       {/* 主內容區 */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className="max-w-[1600px] mx-auto px-4 py-6">
 
-        {/* 操作工具列：搜尋與新增 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
-            <input
-              type="text"
-              placeholder="搜尋學生姓名..."
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="flex gap-2 w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="輸入學生姓名..."
-              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all w-full md:w-64"
-              value={newStudentName}
-              onChange={(e) => setNewStudentName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addStudent()}
-            />
-
-            <button
-              onClick={addStudent}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/30 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
-            >
-              <Plus className="w-5 h-5" />
-              新增
-            </button>
-          </div>
-        </div>
-
-        {/* 學生列表：課程卡片風格 */}
+        {/* 學生列表：極簡緊湊風格 */}
         {students.length === 0 ? (
           <div className="bg-white rounded-3xl border-2 border-dashed border-slate-200 p-12 text-center">
             <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
               <BookOpen className="w-10 h-10 text-emerald-300" />
             </div>
-            <h3 className="text-xl font-bold text-slate-700 mb-2">開始建立您的班級！</h3>
-            <p className="text-slate-400 mb-6">目前還沒有學生資料，請在上方輸入姓名新增。</p>
+            <h3 className="text-xl font-bold text-slate-700 mb-2">等待匯入學生名單</h3>
+            <p className="text-slate-400 mb-6">請提供名單給工程師進行設定。</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {filteredStudents.map((student) => {
               // Deterministic Animal Avatar
               const animals = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦉', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗'];
@@ -141,7 +108,7 @@ export default function Home() {
               return (
                 <div
                   key={student.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group relative"
+                  className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border border-slate-100 flex flex-col group relative"
                 >
                   {/* 刪除按鈕 (Two-step confirmation) */}
                   <button
@@ -156,51 +123,51 @@ export default function Home() {
                         setTimeout(() => setConfirmDeleteId(prev => (prev === student.id ? null : prev)), 3000);
                       }
                     }}
-                    className={`absolute top-2 right-2 p-2 rounded-lg transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
+                    className={`absolute top-1.5 right-1.5 p-1.5 rounded-lg transition-all shadow-sm z-50 active:scale-95 border ${confirmDeleteId === student.id
                       ? 'bg-red-600 text-white border-red-600 animate-pulse'
                       : 'bg-red-50 text-red-500 hover:bg-red-600 hover:text-white border-red-100'
                       }`}
                     title={confirmDeleteId === student.id ? "再次點擊以確認刪除" : "移除學生"}
                   >
                     {confirmDeleteId === student.id ? (
-                      <span className="text-xs font-bold whitespace-nowrap">確認?</span>
+                      <span className="text-[10px] font-bold whitespace-nowrap px-1">確認?</span>
                     ) : (
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     )}
                   </button>
 
-                  {/* 卡片頂部 (Compact) */}
-                  <div className={`h-20 ${getCardColor(student.name)} relative overflow-hidden flex items-center justify-center`}>
+                  {/* 卡片頂部 (Compact Header) */}
+                  <div className={`h-16 ${getCardColor(student.name)} relative overflow-hidden flex items-center justify-center`}>
                     <div className="absolute inset-0 bg-white/10 opacity-30 pattern-dots transform rotate-12 scale-150"></div>
 
                     {/* QR Code 下載 (Top Left) */}
                     <a
                       href={generateQRCodeUrl(student.id, student.name)}
                       download={`qrcode-${student.name}.png`}
-                      className="absolute top-2 left-2 p-2 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
+                      className="absolute top-1.5 left-1.5 p-1.5 bg-white/90 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition-all backdrop-blur-sm shadow-sm z-10"
                       title="下載 QR Code"
                       target="_blank"
                     >
-                      <QrCode className="w-4 h-4" />
+                      <QrCode className="w-3.5 h-3.5" />
                     </a>
 
                     {/* Avatar */}
-                    <div className="w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center text-3xl z-10 mt-6 transform translate-y-4">
+                    <div className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-2xl z-10 mt-5 transform translate-y-3">
                       {avatar}
                     </div>
                   </div>
 
-                  {/* 卡片內容 (Compact) */}
-                  <div className="pt-8 pb-4 px-4 text-center flex-1">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4 line-clamp-1">{student.name}</h3>
+                  {/* 卡片內容 (Ultra Compact) */}
+                  <div className="pt-8 pb-3 px-3 text-center flex-1 flex flex-col justify-between">
+                    <h3 className="text-base font-bold text-slate-800 mb-3 line-clamp-1">{student.name}</h3>
 
                     {/* 開始錄音按鈕 */}
                     <Link
                       href={`/record/${student.id}`}
-                      className="flex items-center justify-center gap-2 w-full py-2 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg shadow-emerald-500/20 text-sm"
+                      className="flex items-center justify-center gap-1.5 w-full py-2 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-sm hover:shadow-md shadow-emerald-500/20 text-xs"
                     >
-                      <Mic className="w-4 h-4" />
-                      開始錄音
+                      <Mic className="w-3.5 h-3.5" />
+                      錄音
                     </Link>
                   </div>
                 </div>
