@@ -17,7 +17,7 @@ const DEFAULT_STUDENTS: Student[] = [
     { id: 's-04', name: '陳崇名' },
     { id: 's-05', name: '王晨佑' },
     { id: 's-06', name: '林楷鈞' },
-    { id: 's-07', name: '許睿旃' },
+    { id: 's-07', name: '許睿旂' },
     { id: 's-08', name: '馬頤中' },
     { id: 's-09', name: '李承翰' },
     { id: 's-10', name: '陳韋豪' },
