@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Mic, Trash2, BookOpen, GraduationCap, School, QrCode } from 'lucide-react';
 import { CLASS_INFO } from '@/config/class-info';
+import { storage } from '@/lib/firebase';
+import { ref, getMetadata } from 'firebase/storage';
 
 interface Student {
     id: string;
@@ -46,6 +48,7 @@ export default function Home() {
     const [students, setStudents] = useState<Student[]>([]);
     const [isClient, setIsClient] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [todayUploads, setTodayUploads] = useState<Record<string, boolean>>({});
 
     // --- Auth State ---
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -80,8 +83,31 @@ export default function Home() {
         // Save only if authenticated and loaded
         if (isClient && isAuthenticated && students.length > 0) {
             localStorage.setItem('students', JSON.stringify(students));
+            checkAudioUpdates(students);
         }
     }, [students, isClient, isAuthenticated]);
+
+    const checkAudioUpdates = async (currentStudents: Student[]) => {
+        const today = new Date().toDateString();
+        const updates: Record<string, boolean> = {};
+
+        await Promise.all(currentStudents.map(async (student) => {
+            const storageRef = ref(storage, `feedback/${student.id}.webm`);
+            try {
+                const metadata = await getMetadata(storageRef);
+                if (metadata.updated) {
+                    const updatedDate = new Date(metadata.updated).toDateString();
+                    if (updatedDate === today) {
+                        updates[student.id] = true;
+                    }
+                }
+            } catch (error) {
+                // File might not exist yet or error fetching metadata, just skip
+            }
+        }));
+
+        setTodayUploads(updates);
+    };
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -202,13 +228,23 @@ export default function Home() {
                             return (
                                 <div
                                     key={student.id}
-                                    className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 border border-stone-100 flex flex-col p-4 group relative"
+                                    className={`rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col p-4 group relative ${todayUploads[student.id]
+                                            ? 'bg-teal-50 border-2 border-teal-500'
+                                            : 'bg-white border border-stone-100'
+                                        }`}
                                 >
                                     {/* 第一排：姓名 + 操作按鈕 */}
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-lg font-bold text-stone-700 tracking-tight leading-none flex items-center pl-2 border-l-[3px] border-teal-600/50 h-5">
-                                            {student.name}
-                                        </h3>
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-lg font-bold text-stone-700 tracking-tight leading-none flex items-center pl-2 border-l-[3px] border-teal-600/50 h-5">
+                                                {student.name}
+                                            </h3>
+                                            {todayUploads[student.id] && (
+                                                <span className="text-[10px] bg-teal-600 text-white px-1.5 py-0.5 rounded-md font-bold tracking-wider">
+                                                    今日更新
+                                                </span>
+                                            )}
+                                        </div>
 
                                         <div className="flex items-center gap-1">
                                             {/* QR Code */}
