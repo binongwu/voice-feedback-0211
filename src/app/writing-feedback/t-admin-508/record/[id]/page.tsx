@@ -103,11 +103,20 @@ export default function RecordPage() {
         if (!audioBlob || !student) return;
 
         setUploading(true);
-        const storageRef = ref(storage, `feedback/${student.id}.webm`);
+
+        // Derive the correct file extension from the actual recorded MIME type.
+        // iPhone Safari records audio/mp4; Chrome on desktop records audio/webm.
+        // Uploading with the wrong extension causes iOS players to silently fail.
+        const mime = mimeTypeRef.current || 'audio/webm';
+        const extension = mime.includes('mp4') ? 'mp4' : 'webm';
+        const filename = `feedback/${student.id}.${extension}`;
+        const storageRef = ref(storage, filename);
 
         try {
-            const metadata = { contentType: mimeTypeRef.current || 'audio/webm', cacheControl: 'public, max-age=0, must-revalidate' };
+            const metadata = { contentType: mime, cacheControl: 'public, max-age=0, must-revalidate' };
             await uploadBytes(storageRef, audioBlob, metadata);
+            // Store the extension so the playback page can fetch the right file.
+            localStorage.setItem(`audio_ext_${student.id}`, extension);
             setUploadSuccess(true);
         } catch (error) {
             console.error('Firebase Upload error:', error);

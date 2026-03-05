@@ -26,6 +26,7 @@ export default function FeedbackPage() {
     const [error, setError] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [audioReady, setAudioReady] = useState(false);
 
     // Avatar state
     const [currentAvatar, setCurrentAvatar] = useState<string>('🐶');
@@ -66,30 +67,47 @@ export default function FeedbackPage() {
         }
 
         // 3. Fetch Audio
+        // Try the correct extension in order:
+        // 1) localStorage (set by the recorder when uploading)
+        // 2) mp4  (iPhone Safari records audio/mp4)
+        // 3) webm (Chrome/Android fallback)
         const fetchAudio = async () => {
-            try {
-                const audioRefFire = ref(storage, `feedback/${studentId}.webm`);
-                const url = await getDownloadURL(audioRefFire);
-                setAudioUrl(url);
-            } catch (err) {
-                console.error("Error fetching audio:", err);
-                setError("尚未收到老師的回饋錄音喔！");
-            } finally {
-                setLoading(false);
+            const savedExt = localStorage.getItem(`audio_ext_${studentId}`);
+            const extOrder = savedExt
+                ? [savedExt]
+                : ['mp4', 'webm'];
+
+            for (const ext of extOrder) {
+                try {
+                    const audioRefFire = ref(storage, `feedback/${studentId}.${ext}`);
+                    const url = await getDownloadURL(audioRefFire);
+                    setAudioUrl(url);
+                    setLoading(false);
+                    return; // success – stop trying
+                } catch {
+                    // not found with this extension, try next
+                }
             }
+            setError("尚未收到老師的回饋錄音喔！");
+            setLoading(false);
         };
 
         fetchAudio();
     }, [studentId, urlName, urlAvatar]);
 
-    const togglePlay = () => {
-        if (audioRef.current) {
+    const togglePlay = async () => {
+        if (!audioRef.current) return;
+        try {
             if (isPlaying) {
                 audioRef.current.pause();
+                setIsPlaying(false);
             } else {
-                audioRef.current.play();
+                await audioRef.current.play(); // await 確保真的播放成功才更新狀態
+                setIsPlaying(true);
             }
-            setIsPlaying(!isPlaying);
+        } catch (err) {
+            console.error('播放失敗:', err);
+            setIsPlaying(false); // 失敗時重設，避免顯示錯誤的 PLAYING 狀態
         }
     };
 
@@ -181,9 +199,12 @@ export default function FeedbackPage() {
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={togglePlay}
-                                        className="w-14 h-14 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-lg shadow-teal-900/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
+                                        disabled={!audioReady}
+                                        className="w-14 h-14 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-lg shadow-teal-900/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0 disabled:opacity-50 disabled:cursor-wait"
                                     >
-                                        {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                                        {!audioReady
+                                            ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                            : isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
                                     </button>
 
                                     {/* Progress Bar Container */}
@@ -198,8 +219,11 @@ export default function FeedbackPage() {
                                 <audio
                                     ref={audioRef}
                                     src={audioUrl || ''}
+                                    onCanPlay={() => setAudioReady(true)}
                                     onTimeUpdate={handleTimeUpdate}
                                     onEnded={handleEnded}
+                                    playsInline
+                                    preload="auto"
                                     className="hidden"
                                 />
                             </div>
