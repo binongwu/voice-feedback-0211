@@ -26,7 +26,7 @@ export default function FeedbackPage() {
     const [error, setError] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [audioReady, setAudioReady] = useState(false);
+    const [audioError, setAudioError] = useState(false);
 
     // Avatar state
     const [currentAvatar, setCurrentAvatar] = useState<string>('🐶');
@@ -102,12 +102,13 @@ export default function FeedbackPage() {
                 audioRef.current.pause();
                 setIsPlaying(false);
             } else {
-                await audioRef.current.play(); // await 確保真的播放成功才更新狀態
+                await audioRef.current.play();
                 setIsPlaying(true);
             }
         } catch (err) {
             console.error('播放失敗:', err);
-            setIsPlaying(false); // 失敗時重設，避免顯示錯誤的 PLAYING 狀態
+            setIsPlaying(false);
+            setAudioError(true);
         }
     };
 
@@ -199,12 +200,9 @@ export default function FeedbackPage() {
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={togglePlay}
-                                        disabled={!audioReady}
-                                        className="w-14 h-14 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-lg shadow-teal-900/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0 disabled:opacity-50 disabled:cursor-wait"
+                                        className="w-14 h-14 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-lg shadow-teal-900/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shrink-0"
                                     >
-                                        {!audioReady
-                                            ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                            : isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                                        {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
                                     </button>
 
                                     {/* Progress Bar Container */}
@@ -219,13 +217,15 @@ export default function FeedbackPage() {
                                 <audio
                                     ref={audioRef}
                                     src={audioUrl || ''}
-                                    onCanPlay={() => setAudioReady(true)}
                                     onTimeUpdate={handleTimeUpdate}
                                     onEnded={handleEnded}
+                                    onError={() => { setAudioError(true); setIsPlaying(false); }}
                                     playsInline
-                                    preload="auto"
                                     className="hidden"
                                 />
+                                {audioError && (
+                                    <p className="text-rose-500 text-xs text-center mt-2">播放失敗，請檢查網路後重試</p>
+                                )}
                             </div>
                         )}
                     </div>
