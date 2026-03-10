@@ -381,7 +381,7 @@ export default function IdiomLearningPage({ params }: { params: Promise<{ id: st
                                     )}
 
                                     {/* Quiz Unlock Button */}
-                                    {canStartQuiz && phase !== 'quiz' && (
+                                    {canStartQuiz && (
                                         <button
                                             onClick={() => setPhase('quiz')}
                                             className="mt-4 w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white py-3 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-indigo-300 animate-bounce"

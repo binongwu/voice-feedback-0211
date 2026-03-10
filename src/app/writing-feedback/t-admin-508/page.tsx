@@ -199,7 +199,7 @@ export default function Home() {
                         <div>
                             <h1 className="text-xl font-bold text-stone-800 tracking-tight flex items-center gap-2">
                                 {CLASS_INFO.id} 寫作回饋
-                                <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">v.Admin-Secure-v1.1-SYNC-CHECK</span>
+                                <span className="text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">v.Admin-Secure</span>
                             </h1>
                             <p className="text-xs text-stone-500 font-medium tracking-wide uppercase">Teacher's Dashboard (Private)</p>
                         </div>
