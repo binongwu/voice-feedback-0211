@@ -42,6 +42,7 @@ const DEFAULT_STUDENTS: Student[] = [
     { id: 's-27', name: '蔡芷柔' },
     { id: 's-28', name: '張芸榕' },
     { id: 's-29', name: '連晨希' },
+    { id: 's-30', name: '測試123' },
 ];
 
 export default function Home() {
