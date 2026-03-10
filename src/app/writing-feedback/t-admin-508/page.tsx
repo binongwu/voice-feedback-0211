@@ -69,10 +69,17 @@ export default function Home() {
     const loadStudents = () => {
         const savedStudents = localStorage.getItem('students');
         if (savedStudents) {
-            const parsed = JSON.parse(savedStudents);
-            if (parsed.length > 0) {
-                setStudents(parsed);
-            } else {
+            try {
+                const parsed: Student[] = JSON.parse(savedStudents);
+                // Merge logic: ensure all DEFAULT_STUDENTS are present
+                const merged = [...parsed];
+                DEFAULT_STUDENTS.forEach(defStudent => {
+                    if (!merged.find(s => s.id === defStudent.id)) {
+                        merged.push(defStudent);
+                    }
+                });
+                setStudents(merged);
+            } catch (e) {
                 setStudents(DEFAULT_STUDENTS);
             }
         } else {
@@ -230,8 +237,8 @@ export default function Home() {
                                 <div
                                     key={student.id}
                                     className={`rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col p-4 group relative ${todayUploads[student.id]
-                                            ? 'bg-teal-50 border-2 border-teal-500'
-                                            : 'bg-white border border-stone-100'
+                                        ? 'bg-teal-50 border-2 border-teal-500'
+                                        : 'bg-white border border-stone-100'
                                         }`}
                                 >
                                     {/* 第一排：姓名 + 操作按鈕 */}
