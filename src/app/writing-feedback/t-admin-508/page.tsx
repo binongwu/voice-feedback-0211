@@ -256,7 +256,7 @@ export default function Home() {
                                             </h3>
                                             {recentUploads[student.id] && (
                                                 <span className="text-[10px] bg-teal-600 text-white px-1.5 py-0.5 rounded-md font-bold tracking-wider">
-                                                    24h內已點評
+                                                    已點評
                                                 </span>
                                             )}
                                         </div>
