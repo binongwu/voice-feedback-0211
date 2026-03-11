@@ -49,7 +49,7 @@ export default function Home() {
     const [students, setStudents] = useState<Student[]>([]);
     const [isClient, setIsClient] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-    const [todayUploads, setTodayUploads] = useState<Record<string, boolean>>({});
+    const [recentUploads, setRecentUploads] = useState<Record<string, boolean>>({});
 
     // --- Auth State ---
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -96,25 +96,32 @@ export default function Home() {
     }, [students, isClient, isAuthenticated]);
 
     const checkAudioUpdates = async (currentStudents: Student[]) => {
-        const today = new Date().toDateString();
+        const last24h = 24 * 60 * 60 * 1000;
+        const now = Date.now();
         const updates: Record<string, boolean> = {};
 
         await Promise.all(currentStudents.map(async (student) => {
-            const storageRef = ref(storage, `feedback/${student.id}.webm`);
-            try {
-                const metadata = await getMetadata(storageRef);
-                if (metadata.updated) {
-                    const updatedDate = new Date(metadata.updated).toDateString();
-                    if (updatedDate === today) {
-                        updates[student.id] = true;
+            // Check both formats since different devices upload different extensions
+            const extensions = ['.webm', '.mp4'];
+            
+            for (const ext of extensions) {
+                const storageRef = ref(storage, `feedback/${student.id}${ext}`);
+                try {
+                    const metadata = await getMetadata(storageRef);
+                    if (metadata.updated) {
+                        const updatedTime = new Date(metadata.updated).getTime();
+                        if (now - updatedTime < last24h) {
+                            updates[student.id] = true;
+                            break; // If one format is found to be recent, no need to check others
+                        }
                     }
+                } catch (error) {
+                    // Skip if file doesn't exist
                 }
-            } catch (error) {
-                // File might not exist yet or error fetching metadata, just skip
             }
         }));
 
-        setTodayUploads(updates);
+        setRecentUploads(updates);
     };
 
     const handleLogin = (e: React.FormEvent) => {
@@ -236,7 +243,7 @@ export default function Home() {
                             return (
                                 <div
                                     key={student.id}
-                                    className={`rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col p-4 group relative ${todayUploads[student.id]
+                                    className={`rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col p-4 group relative ${recentUploads[student.id]
                                         ? 'bg-teal-50 border-2 border-teal-500'
                                         : 'bg-white border border-stone-100'
                                         }`}
@@ -247,9 +254,9 @@ export default function Home() {
                                             <h3 className="text-lg font-bold text-stone-700 tracking-tight leading-none flex items-center pl-2 border-l-[3px] border-teal-600/50 h-5">
                                                 {student.name}
                                             </h3>
-                                            {todayUploads[student.id] && (
+                                            {recentUploads[student.id] && (
                                                 <span className="text-[10px] bg-teal-600 text-white px-1.5 py-0.5 rounded-md font-bold tracking-wider">
-                                                    今日更新
+                                                    24h內已點評
                                                 </span>
                                             )}
                                         </div>
